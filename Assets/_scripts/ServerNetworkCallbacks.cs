@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 [BoltGlobalBehaviour(BoltNetworkModes.Host)]
-public class NetworkCallbacks : Bolt.GlobalEventListener {
+public class ServerNetworkCallbacks : Bolt.GlobalEventListener {
 
     public Dictionary<BoltEntity, BoltConnection> playerList;
 
