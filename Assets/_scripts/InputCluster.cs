@@ -2,7 +2,7 @@
 using System.Collections;
 
 public struct InputCluster {
-    public const float MOUSE_SENSITIVITY = 2.0f;
+    //public const float MOUSE_SENSITIVITY = 2.0f;
 
     public float forward { get; private set; }
     //public float backward { get; private set; }
@@ -23,10 +23,10 @@ public struct InputCluster {
         roll = Input.GetAxis("Roll");
 
         if (mouse) {
-            yaw += (Input.GetAxisRaw("Pitch") * MOUSE_SENSITIVITY);
+            yaw += (Input.GetAxis("Pitch"));
             yaw %= 360f;
 
-            pitch += (-Input.GetAxisRaw("Yaw") * MOUSE_SENSITIVITY);
+            pitch += (-Input.GetAxis("Yaw"));
             pitch %= 360f;
         }
     }
