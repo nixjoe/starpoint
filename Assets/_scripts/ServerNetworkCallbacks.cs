@@ -22,5 +22,10 @@ public class NetworkCallbacks : Bolt.GlobalEventListener {
         Vector3 pos = new Vector3(Random.Range(-16, 16), 0, Random.Range(-16, 16));
         BoltEntity entity = BoltNetwork.Instantiate(BoltPrefabs.Player, pos, Quaternion.identity);
         playerList.Add(entity, connection);
+        if (connection == null) {
+            entity.TakeControl();
+        } else {
+            entity.AssignControl(connection);
+        }
     }
 }
