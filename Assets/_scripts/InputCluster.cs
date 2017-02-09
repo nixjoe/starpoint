@@ -14,20 +14,20 @@ public struct InputCluster {
     //public float down { get; private set; }
     public float pitch { get; private set; }
     public float yaw { get; private set; }
-
+    public bool exit { get; private set; }
     public void ReadInput(bool mouse) {
 
         forward = Input.GetAxis("Forward/Backward");
         right = Input.GetAxis("Right/Left");
         up = Input.GetAxis("Up/Down");
         roll = Input.GetAxis("Roll");
-
+        exit = Input.GetButton("Exit");
         if (mouse) {
-            yaw += (Input.GetAxis("Pitch"));
-            yaw %= 360f;
+            yaw = (Input.GetAxis("Yaw"));
+            //yaw %= 360f;
 
-            pitch += (-Input.GetAxis("Yaw"));
-            pitch %= 360f;
+            pitch = (-Input.GetAxis("Pitch"));
+            //pitch %= 360f;
         }
     }
 }

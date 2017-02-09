@@ -291,6 +291,21 @@
             </AssetSettings>
             <Filters>0</Filters>
           </PropertyDefinition>
+          <PropertyDefinition>
+            <Name>exit</Name>
+            <Enabled>true</Enabled>
+            <Replicated>false</Replicated>
+            <Expanded>true</Expanded>
+            <Controller>false</Controller>
+            <ReplicationMode>Everyone</ReplicationMode>
+            <Priority>1</Priority>
+            <PropertyType xsi:type="PropertyTypeBool" />
+            <AssetSettings xsi:type="PropertyCommandSettings">
+              <SmoothCorrection>false</SmoothCorrection>
+              <SnapMagnitude>0</SnapMagnitude>
+            </AssetSettings>
+            <Filters>0</Filters>
+          </PropertyDefinition>
         </Input>
         <Result>
           <PropertyDefinition>
@@ -446,7 +461,7 @@
               </Compression>
             </PropertyType>
             <AssetSettings xsi:type="PropertyCommandSettings">
-              <SmoothCorrection>false</SmoothCorrection>
+              <SmoothCorrection>true</SmoothCorrection>
               <SnapMagnitude>0</SnapMagnitude>
             </AssetSettings>
             <Filters>0</Filters>

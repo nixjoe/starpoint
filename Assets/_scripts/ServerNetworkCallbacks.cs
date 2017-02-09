@@ -1,11 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 [BoltGlobalBehaviour(BoltNetworkModes.Host)]
 public class ServerNetworkCallbacks : Bolt.GlobalEventListener {
 
     public Dictionary<BoltEntity, BoltConnection> playerList;
-
+    public BoltEntity PlayerLookup(BoltConnection connection) {
+        foreach (BoltEntity key in playerList.Keys) {
+            if (playerList[key] = connection) {
+                return key;
+            }
+        }
+        return null;
+    }
     public override void BoltStartDone() {
         playerList = new Dictionary<BoltEntity, BoltConnection>();
     }
@@ -13,6 +21,9 @@ public class ServerNetworkCallbacks : Bolt.GlobalEventListener {
     public override void Connected(BoltConnection connection) {
         Debug.Log("New connection from " + connection.RemoteEndPoint.ToString());
         InstantiatePlayer(connection);
+    }
+    public override void Disconnected(BoltConnection connection) {
+        BoltNetwork.Destroy(PlayerLookup(connection));
     }
     public override void SceneLoadLocalDone(string map) {
         //instantiate the host player
