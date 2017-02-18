@@ -6,14 +6,17 @@ public class PlayerBehaviour : Bolt.EntityBehaviour<IPlayerState> {
     public InputCluster input;
     public Rigidbody rb;
     public float movementTorque, movementForce, maxStoppingTorque;
-    public Collider initialCollider, actualCollider;
+    //public Collider initialCollider, actualCollider;
+    public Camera cam;
+    public Transform renderTransform;
+
     public override void Attached() {
         //rb = GetComponent<Rigidbody>();
-        state.SetTransforms(state.Transform, transform);
-        Vector3 it = rb.inertiaTensor;
-        actualCollider.enabled = true;
-        initialCollider.enabled = false;
-        rb.inertiaTensor = it;
+        state.SetTransforms(state.Transform, transform, renderTransform);
+        //Vector3 it = rb.inertiaTensor;
+        //actualCollider.enabled = true;
+        //initialCollider.enabled = false;
+        //rb.inertiaTensor = it;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -39,12 +42,11 @@ public class PlayerBehaviour : Bolt.EntityBehaviour<IPlayerState> {
         commandInput.exit = input.exit;
         entity.QueueInput(commandInput);
     }
-
     public override void ExecuteCommand(Command command, bool resetState) {
         PlayerInputCommand cmd = (PlayerInputCommand)command;
         if (resetState) {
             transform.position = cmd.Result.position;
-            transform.rotation = cmd.Result.rotation;
+            transform.rotation = Quaternion.Slerp(transform.rotation,cmd.Result.rotation,0.3f);
             rb.velocity = cmd.Result.velocity;
             rb.angularVelocity = cmd.Result.angularVelocity;
             if (cmd.Input.exit) {
@@ -79,9 +81,9 @@ public class PlayerBehaviour : Bolt.EntityBehaviour<IPlayerState> {
             //}
         } else {
             if (transform.InverseTransformDirection(rb.angularVelocity).z < 0) {
-                rb.AddRelativeTorque(0f, 0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).z, 0, maxStoppingTorque), ForceMode.Impulse);
+                //rb.AddRelativeTorque(0f, 0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).z, 0, maxStoppingTorque), ForceMode.Impulse);
             } else {
-                rb.AddRelativeTorque(0f, 0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).z, -maxStoppingTorque, 0), ForceMode.Impulse);
+                //rb.AddRelativeTorque(0f, 0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).z, -maxStoppingTorque, 0), ForceMode.Impulse);
             }
         }
         float mouseX = yaw;
@@ -89,9 +91,9 @@ public class PlayerBehaviour : Bolt.EntityBehaviour<IPlayerState> {
         //if mouse x isn't moving, stop
         if (Mathf.Abs(mouseX) <= 0.1f) {
             if (transform.InverseTransformDirection(rb.angularVelocity).y < 0) {
-                rb.AddRelativeTorque(0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).y, 0, maxStoppingTorque), 0f, ForceMode.Impulse);
+                //rb.AddRelativeTorque(0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).y, 0, maxStoppingTorque), 0f, ForceMode.Impulse);
             } else {
-                rb.AddRelativeTorque(0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).y, -maxStoppingTorque, 0), 0f, ForceMode.Impulse);
+                //rb.AddRelativeTorque(0f, Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).y, -maxStoppingTorque, 0), 0f, ForceMode.Impulse);
             }
             //otherwise, apply mouse as torque
         } else {
@@ -104,9 +106,9 @@ public class PlayerBehaviour : Bolt.EntityBehaviour<IPlayerState> {
         //if mouse y isn't moving, stop
         if (Mathf.Abs(mouseY) <= 0.1f) {
             if (transform.InverseTransformDirection(rb.angularVelocity).x < 0) {
-                rb.AddRelativeTorque(Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).x, 0, maxStoppingTorque), 0f, 0f, ForceMode.Impulse);
+                //rb.AddRelativeTorque(Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).x, 0, maxStoppingTorque), 0f, 0f, ForceMode.Impulse);
             } else {
-                rb.AddRelativeTorque(Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).x, -maxStoppingTorque, 0), 0f, 0f, ForceMode.Impulse);
+                //rb.AddRelativeTorque(Mathf.Clamp(-transform.InverseTransformDirection(rb.angularVelocity).x, -maxStoppingTorque, 0), 0f, 0f, ForceMode.Impulse);
             }
             //otherwise, apply mouse as torque
         } else {

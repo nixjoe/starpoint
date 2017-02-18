@@ -22,8 +22,8 @@
             <PropertyType xsi:type="PropertyTypeTransform">
               <PositionSelection>XYZ</PositionSelection>
               <RotationSelection>XYZ</RotationSelection>
-              <ExtrapolationVelocityMode>CalculateFromPosition</ExtrapolationVelocityMode>
-              <Space>Local</Space>
+              <ExtrapolationVelocityMode>CopyFromRigidbody</ExtrapolationVelocityMode>
+              <Space>World</Space>
               <PositionCompression>
                 <FloatCompression>
                   <MinValue>-1024</MinValue>
@@ -74,7 +74,7 @@
               </RotationCompressionQuaternion>
             </PropertyType>
             <AssetSettings xsi:type="PropertyStateSettings">
-              <SmoothingAlgorithm>Interpolation</SmoothingAlgorithm>
+              <SmoothingAlgorithm>None</SmoothingAlgorithm>
               <ExtrapolationErrorTolerance>0.25</ExtrapolationErrorTolerance>
               <_ExtrapolationCorrectionFrames>6</_ExtrapolationCorrectionFrames>
               <ExtrapolationMaxFrames>9</ExtrapolationMaxFrames>
@@ -295,7 +295,7 @@
             <Name>exit</Name>
             <Enabled>true</Enabled>
             <Replicated>false</Replicated>
-            <Expanded>true</Expanded>
+            <Expanded>false</Expanded>
             <Controller>false</Controller>
             <ReplicationMode>Everyone</ReplicationMode>
             <Priority>1</Priority>
@@ -312,7 +312,7 @@
             <Name>position</Name>
             <Enabled>true</Enabled>
             <Replicated>false</Replicated>
-            <Expanded>false</Expanded>
+            <Expanded>true</Expanded>
             <Controller>false</Controller>
             <ReplicationMode>Everyone</ReplicationMode>
             <Priority>1</Priority>
@@ -341,7 +341,7 @@
               </Compression>
             </PropertyType>
             <AssetSettings xsi:type="PropertyCommandSettings">
-              <SmoothCorrection>false</SmoothCorrection>
+              <SmoothCorrection>true</SmoothCorrection>
               <SnapMagnitude>0</SnapMagnitude>
             </AssetSettings>
             <Filters>0</Filters>
@@ -350,7 +350,7 @@
             <Name>velocity</Name>
             <Enabled>true</Enabled>
             <Replicated>false</Replicated>
-            <Expanded>false</Expanded>
+            <Expanded>true</Expanded>
             <Controller>false</Controller>
             <ReplicationMode>Everyone</ReplicationMode>
             <Priority>1</Priority>
@@ -379,7 +379,7 @@
               </Compression>
             </PropertyType>
             <AssetSettings xsi:type="PropertyCommandSettings">
-              <SmoothCorrection>false</SmoothCorrection>
+              <SmoothCorrection>true</SmoothCorrection>
               <SnapMagnitude>0</SnapMagnitude>
             </AssetSettings>
             <Filters>0</Filters>
@@ -388,7 +388,7 @@
             <Name>rotation</Name>
             <Enabled>true</Enabled>
             <Replicated>false</Replicated>
-            <Expanded>false</Expanded>
+            <Expanded>true</Expanded>
             <Controller>false</Controller>
             <ReplicationMode>Everyone</ReplicationMode>
             <Priority>1</Priority>
@@ -467,7 +467,7 @@
             <Filters>0</Filters>
           </PropertyDefinition>
         </Result>
-        <SmoothFrames>0</SmoothFrames>
+        <SmoothFrames>15</SmoothFrames>
         <CompressZeroValues>false</CompressZeroValues>
         <Properties />
       </AssetDefinition>
