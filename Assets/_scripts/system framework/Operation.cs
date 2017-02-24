@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public interface IEquippable : ICarryable {
+public class Operation {
 }
