@@ -1,9 +1,9 @@
 Welcome to Starpoint!
 [Go to the pretty GitHub Page](http://mgp214.github.io/starpoint)
 
-[Design Document](Markdown\design-document.md)  
-[Inventory](Markdown\inventory.md)  
-[Component-level Architecture](Markdown\component-level-arch.md)  
+[Design Document](Markdown/design-document.md)  
+[Inventory](Markdown/inventory.md)  
+[Component-level Architecture](Markdown/component-level-arch.md)  
 # Roadmap
 
 v0.1: implement multiplayer framework:
