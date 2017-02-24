@@ -1,8 +1,8 @@
 Welcome to the starpoint wiki!
 
-[Design Document](Markdown\design-document.md)
-[Inventory](Markdown\inventory.md)
-[Component-level Architecture](Markdown\component-level-arch.md)
+[Design Document](Markdown\design-document.md)  
+[Inventory](Markdown\inventory.md)  
+[Component-level Architecture](Markdown\component-level-arch.md)  
 # Roadmap
 
 v0.1: implement multiplayer framework:
