@@ -1,4 +1,5 @@
-Welcome to the starpoint wiki!
+Welcome to Starpoint!
+[Go to the pretty GitHub Page](http://mgp214.github.io/starpoint)
 
 [Design Document](Markdown\design-document.md)  
 [Inventory](Markdown\inventory.md)  
