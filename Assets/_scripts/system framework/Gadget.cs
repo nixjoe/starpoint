@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+/// <summary>
+/// Base class representing all interactable things in starpoint.
+/// </summary>
 public abstract class Gadget {
     //kg
     public float mass { get; private set; }

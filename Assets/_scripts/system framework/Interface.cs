@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
+/// <summary>
+/// Base class for control interfaces for Gadgets, primarily Hardware
+/// </summary>
 public abstract class Interface {
     public string name { get; set; }
     public Interface(string name) {
         this.name = name;
     }
 }
-
+/// <summary>
+/// Interface with a continuous range of float-point values
+/// </summary>
 public class AnalogInterface : Interface {
     public float minimum { get; private set; }
     public float maximum { get; private set; }
@@ -25,7 +29,9 @@ public class AnalogInterface : Interface {
         this.value = Mathf.Clamp(value, minimum, maximum);
     }
 }
-
+/// <summary>
+/// Interface with a discrete range of integer values.
+/// </summary>
 public class DigitalInterface : Interface {
     public int minimum { get; private set; }
     public int maximum { get; private set; }
@@ -43,7 +49,9 @@ public class DigitalInterface : Interface {
         this.value = Mathf.Clamp(value, minimum, maximum);
     }
 }
-
+/// <summary>
+/// Interface with an enumerated list of values.
+/// </summary>
 public class ListInterface : Interface {
     private List<KeyValuePair<string, float>> _list;
     public List<KeyValuePair<string, float>> list { get { return new List<KeyValuePair<string, float>>(_list); } }

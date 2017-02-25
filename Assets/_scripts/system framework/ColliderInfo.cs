@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+/// <summary>
+/// Contains all necessary data to create and configure a Unity Collider.
+/// </summary>
 public abstract class ColliderInfo {
     public Vector3 center { get; protected set; }
 }
