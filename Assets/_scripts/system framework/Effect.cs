@@ -8,6 +8,12 @@ public abstract class Effect {
         this.name = name;
     }
     public abstract void Activate();
+    /// <summary>
+    /// All Effects can activate by default.
+    /// </summary>
+    public virtual bool CanActivate() {
+        return true;
+    }
 }
 
 public class ResourceAddEffect : Effect {
@@ -22,7 +28,10 @@ public class ResourceAddEffect : Effect {
 public class ResourceSubtractEffect : Effect {
     public ResourceSubtractEffect(string name) : base(name) {
     }
-    public bool HasEnoughResources() {
+    /// <summary>
+    /// Returns true if there are enough resources to activate.
+    /// </summary>
+    public override bool CanActivate() {
         throw new NotImplementedException();
     }
     public override void Activate() {

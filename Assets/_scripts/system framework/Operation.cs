@@ -39,7 +39,7 @@ public abstract class Operation {
     public virtual bool CanActivate() {
         foreach (Effect effect in _effects) {
             if (effect is ResourceSubtractEffect) {
-                if (!(effect as ResourceSubtractEffect).HasEnoughResources()) {
+                if (!effect.CanActivate()) {
                     return false;
                 }
             }
