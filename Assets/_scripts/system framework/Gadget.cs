@@ -6,6 +6,7 @@ using System.Collections.Generic;
 /// </summary>
 public abstract class Gadget {
     //kg
+    public GameObject gameObject { get; protected set; }
     public float mass { get; private set; }
     public float condition { get; private set; }
     public float maxCondition { get; private set; }

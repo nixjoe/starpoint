@@ -1,0 +1,56 @@
+﻿<Window x:Class="SRLM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SRLM"
+        mc:Ignorable="d"
+        Title="Starpoint Resource Library Manager" Height="234.424" Width="278.583" MinHeight="350" MinWidth="525">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Height="20">
+            <MenuItem Name="mi_newLibrary" Header="New Library" Click="mi_newLibrary_Click"/>
+            <MenuItem Name="mi_saveLibrary" Header="Save Library" Click="mi_saveLibrary_Click"/>
+            <MenuItem Name="mi_loadLibrary" Header="Load Library" Click="mi_loadLibrary_Click"/>
+        </Menu>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="20" Margin="5">
+            <TextBlock Text="Library: "/>
+            <TextBox Name="tb_libraryName" MinWidth="100"/>
+            <TextBlock Text="Bundle: "/>
+            <TextBox Name="tb_bundleName" MinWidth="100"/>
+        </StackPanel>
+        <DockPanel Name="dp_resourceView" DockPanel.Dock="Left" Width="200" Margin="5">
+            <Menu DockPanel.Dock="Bottom" Height="20">
+                <MenuItem Name="mi_libraryView_new" Click="mi_libraryView_new_Click" Header="New"/>
+                <MenuItem Name="mi_libraryView_copy" Click="mi_libraryView_copy_Click" Header="Copy"/>
+                <MenuItem Name="mi_libraryView_delete" Click="mi_libraryView_delete_Click" Header="Delete"/>
+            </Menu>
+            <ListView Name="lv_resourceList" DockPanel.Dock="Top">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Resource" Width="200" DisplayMemberBinding="{Binding Name}" />
+                        <GridView.ColumnHeaderContainerStyle>
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            </Style>
+                        </GridView.ColumnHeaderContainerStyle>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
+        <Grid Name="dp_resourceProperties" DockPanel.Dock="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Margin="5">
+                <TextBlock Text="Name" Margin="5" Height="20"/>
+                <TextBlock Text="Weight per unit" Margin="5" Height="20"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Margin="5">
+                <TextBox Name="tb_resourceName" Margin="5" Height="20"/>
+                <TextBox Name="tb_resourceWeight" Margin="5" Height="20"/>
+            </StackPanel>
+        </Grid>
+
+    </DockPanel>
+</Window>

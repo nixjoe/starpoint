@@ -5,6 +5,7 @@ using System;
 /// Operations are the "functions" of Gadgets. Examples include a thruster's "thrust" or a gun's "shoot"
 /// </summary>
 public abstract class Operation {
+    public Gadget gadget { get; protected set; }
     public enum TriggerMode { Passive, Semiautomatic, Automatic }
     public string name { get; protected set; }
     public TriggerMode triggerMode { get; protected set; }
