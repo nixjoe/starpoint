@@ -32,5 +32,9 @@ sysinfo.txt
 builds/
 
 # Don't ignore VS files for external tools
-!/S*LM/*
-/S*LM/obj/*
+!/SRLM/*
+/SRLM/obj/*
+!/SOLM/*
+/SOLM/obj/*
+!/SELM/*
+/SELM/obj/*
