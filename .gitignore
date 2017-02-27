@@ -30,3 +30,7 @@ sysinfo.txt
 *.unitypackage
 
 builds/
+
+# Don't ignore VS files for external tools
+!/S*LM/*
+/S*LM/obj/*
