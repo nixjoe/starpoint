@@ -14,9 +14,9 @@
         </Menu>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="20" Margin="5">
             <TextBlock Text="Library: "/>
-            <TextBox Name="tb_libraryName" MinWidth="100"/>
+            <TextBox Name="tb_libraryName" MinWidth="100" Text="{Binding library.name}"/>
             <TextBlock Text="Bundle: "/>
-            <TextBox Name="tb_bundleName" MinWidth="100"/>
+            <TextBox Name="tb_bundleName" MinWidth="100" Text="{Binding library.bundle}"/>
         </StackPanel>
         <DockPanel Name="dp_resourceView" DockPanel.Dock="Left" Width="200" Margin="5">
             <Menu DockPanel.Dock="Bottom" Height="20">
@@ -27,7 +27,7 @@
             <ListView Name="lv_resourceList" DockPanel.Dock="Top">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Resource" Width="200" DisplayMemberBinding="{Binding Name}" />
+                        <GridViewColumn Header="Resource" Width="200" DisplayMemberBinding="{Binding name}" />
                         <GridView.ColumnHeaderContainerStyle>
                             <Style TargetType="GridViewColumnHeader">
                                 <Setter Property="HorizontalContentAlignment" Value="Left" />
