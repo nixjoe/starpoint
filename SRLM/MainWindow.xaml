@@ -13,10 +13,10 @@
             <MenuItem Name="mi_loadLibrary" Header="Load Library" Click="mi_loadLibrary_Click"/>
         </Menu>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="20" Margin="5">
-            <TextBlock Text="Library: "/>
-            <TextBox Name="tb_libraryName" MinWidth="100" Text="{Binding library.name}"/>
             <TextBlock Text="Bundle: "/>
-            <TextBox Name="tb_bundleName" MinWidth="100" Text="{Binding library.bundle}"/>
+            <TextBox Name="tb_bundleName" MinWidth="100" TextChanged="tb_bundleName_TextChanged"/>
+            <TextBlock Text="Library: "/>
+            <TextBox Name="tb_libraryName" MinWidth="100" TextChanged="tb_libraryName_TextChanged"/>
         </StackPanel>
         <DockPanel Name="dp_resourceView" DockPanel.Dock="Left" Width="200" Margin="5">
             <Menu DockPanel.Dock="Bottom" Height="20">

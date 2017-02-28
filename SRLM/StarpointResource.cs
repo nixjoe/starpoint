@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SRLM {
     public class StarpointResource {
-        public string name;
+        public string name { get; set; }
         public float weight;
         public StarpointResource() {
             name = "";

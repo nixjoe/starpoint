@@ -40,11 +40,12 @@ namespace SRLM {
             }
             Directory.CreateDirectory(destination);
             XmlSerializer serializer = new XmlSerializer(typeof(SRL));
-            string savePath = Path.Combine(destination, string.Join(".", bundleName, name, "SRL"));
+            string savePath = Path.Combine(destination, string.Join(".", bundleName, name, "srl"));
             if (File.Exists(savePath)) {
                 File.Delete(savePath);
             }
             FileStream fs = new FileStream(savePath, FileMode.Create);
+            serializer.Serialize(fs, this);
         }
     }
 }

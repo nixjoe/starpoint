@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<SRL xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <resourceList>
+    <StarpointResource>
+      <name>Resource 1</name>
+      <weight>0</weight>
+    </StarpointResource>
+    <StarpointResource>
+      <name>Resource 2</name>
+      <weight>0</weight>
+    </StarpointResource>
+    <StarpointResource>
+      <name>Resource 3</name>
+      <weight>0</weight>
+    </StarpointResource>
+    <StarpointResource>
+      <name>Resource 4</name>
+      <weight>0</weight>
+    </StarpointResource>
+    <StarpointResource>
+      <name>Resource 5</name>
+      <weight>0</weight>
+    </StarpointResource>
+  </resourceList>
+  <name />
+  <bundleName />
+</SRL>
