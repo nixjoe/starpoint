@@ -34,3 +34,5 @@ builds/
 # Don't ignore VS files for external tools
 !/SRLM/
 /SRLM/obj
+!/SOLM/
+/SOLM/obj
