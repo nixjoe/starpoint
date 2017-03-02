@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<SRL xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <resourceList>
+    <StarpointResource>
+      <name>Resource 1</name>
+      <weight>0</weight>
+    </StarpointResource>
+  </resourceList>
+  <name>fgfg</name>
+  <bundleName>dfg</bundleName>
+</SRL>

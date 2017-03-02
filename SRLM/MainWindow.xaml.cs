@@ -19,15 +19,17 @@ namespace SRLM {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-
+        bool hasChangedSinceSave;
         public SRL library { get; set; }
 
         public MainWindow() {
+            hasChangedSinceSave = false;
             InitializeComponent();
             DataContext = this;
             Update();
         }
         public void Update() {
+
             tb_libraryName.IsEnabled = library != null;
             tb_bundleName.IsEnabled = library != null;
             lv_resourceList.IsEnabled = library != null;
@@ -38,12 +40,19 @@ namespace SRLM {
             tb_resourceName.IsEnabled = lv_resourceList.SelectedItem != null;
             tb_resourceWeight.IsEnabled = lv_resourceList.SelectedItem != null;
             if (library != null) {
+                Title = "Starpoint Resource Library Manager - " + library.bundleName + "." + library.name + ".srl";
+                if (hasChangedSinceSave) {
+                    Title += "*";
+                }
                 lv_resourceList.ItemsSource = library.resourceList;
                 lv_resourceList.Items.Refresh();
+            } else {
+                Title = "Starpoint Resource Library Manager";
             }
 
         }
         private void mi_libraryView_new_Click(object sender, RoutedEventArgs e) {
+            hasChangedSinceSave = true;
             string name = "Resource " + (library.resourceList.Count + 1);
             library.AddResource(new StarpointResource(name, 0.0f));
             Update();
@@ -51,6 +60,7 @@ namespace SRLM {
 
         private void mi_libraryView_copy_Click(object sender, RoutedEventArgs e) {
             if (lv_resourceList.SelectedIndex >= 0) {
+                hasChangedSinceSave = true;
                 StarpointResource selected = lv_resourceList.SelectedItem as StarpointResource;
                 library.AddResource(new StarpointResource(selected.name, selected.weight));
             }
@@ -59,6 +69,7 @@ namespace SRLM {
 
         private void mi_libraryView_delete_Click(object sender, RoutedEventArgs e) {
             if (lv_resourceList.SelectedIndex >= 0) {
+                hasChangedSinceSave = true;
                 library.resourceList.Remove(lv_resourceList.SelectedItem as StarpointResource);
             }
             Update();
@@ -73,12 +84,18 @@ namespace SRLM {
             if ((from StarpointResource s in library.resourceList select s.name).Count() != (from StarpointResource s in library.resourceList select s.name).Distinct().Count()) {
                 MessageBox.Show("All Resources must have unique names!");
             } else {
-                library.Save();
-                Update();
+                try {
+                    library.Save();
+                    hasChangedSinceSave = false;
+                    Update();
+                } catch {
+                    MessageBox.Show("Something went wrong! Library not saved, please try again!");
+                }
             }
         }
 
         private void mi_loadLibrary_Click(object sender, RoutedEventArgs e) {
+            hasChangedSinceSave = false;
             Update();
         }
 
@@ -92,6 +109,7 @@ namespace SRLM {
         private void tb_bundleName_TextChanged(object sender, TextChangedEventArgs e) {
             if (library != null) {
                 library.bundleName = tb_bundleName.Text;
+                hasChangedSinceSave = true;
             }
             Update();
         }
@@ -113,6 +131,7 @@ namespace SRLM {
         private void tb_resourceName_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_resourceList.SelectedIndex >= 0) {
                 (lv_resourceList.SelectedItem as StarpointResource).name = tb_resourceName.Text;
+                hasChangedSinceSave = true;
                 Update();
             }
         }
@@ -122,6 +141,7 @@ namespace SRLM {
                 float parsedVal;
                 if (float.TryParse(tb_resourceWeight.Text, out parsedVal)) {
                     (lv_resourceList.SelectedItem as StarpointResource).weight = parsedVal;
+                    hasChangedSinceSave = true;
                     Update();
                 } else {
                     tb_resourceWeight.Text = (lv_resourceList.SelectedItem as StarpointResource).weight.ToString();
@@ -142,6 +162,14 @@ namespace SRLM {
                     return x.name.CompareTo(y.name);
             });
             Update();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (hasChangedSinceSave) {
+                if (MessageBox.Show("There are unsaved changes in the library! Are you sure you want to quit?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }

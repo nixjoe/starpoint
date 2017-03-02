@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<SRL xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <resourceList>
+    <StarpointResource>
+      <name>after save</name>
+      <weight>0</weight>
+    </StarpointResource>
+  </resourceList>
+  <name>test</name>
+  <bundleName>test</bundleName>
+</SRL>
