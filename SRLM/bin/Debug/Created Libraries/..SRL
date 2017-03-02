@@ -3,23 +3,23 @@
   <resourceList>
     <StarpointResource>
       <name>Resource 1</name>
-      <weight>0</weight>
+      <weight>5</weight>
     </StarpointResource>
     <StarpointResource>
-      <name>Resource 2</name>
-      <weight>0</weight>
+      <name>Resource 2f</name>
+      <weight>6</weight>
     </StarpointResource>
     <StarpointResource>
-      <name>Resource 3</name>
-      <weight>0</weight>
+      <name>Resource 3gfbg</name>
+      <weight>54.23</weight>
     </StarpointResource>
     <StarpointResource>
       <name>Resource 4</name>
-      <weight>0</weight>
+      <weight>4560</weight>
     </StarpointResource>
     <StarpointResource>
       <name>Resource 5</name>
-      <weight>0</weight>
+      <weight>650</weight>
     </StarpointResource>
   </resourceList>
   <name />
