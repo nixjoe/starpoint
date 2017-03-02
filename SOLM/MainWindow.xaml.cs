@@ -21,5 +21,9 @@ namespace SOLM {
         public MainWindow() {
             InitializeComponent();
         }
+
+        private void lv_operationsList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+
+        }
     }
 }
