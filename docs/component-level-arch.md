@@ -48,10 +48,16 @@ characteristics:
 
 **Hardware**
 
-Hardware has two
+Hardware has three
 types of properties:
 
- 
+
+*State Variables*
+
+- state variables are internal variables that are utilized by operations. Examples include:
+   - Ammo in magazine
+   - fire rate based on heat
+   - internal capcitor charge
 
 *Interfaces*
 

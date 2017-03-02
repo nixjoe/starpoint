@@ -1,0 +1,75 @@
+﻿<Window x:Class="SOLM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SOLM"
+        mc:Ignorable="d"
+        Title="Starpoint Object Library Manager" Height="350" Width="800" MinHeight="350" MinWidth="800">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Height="20">
+            <MenuItem Name="mi_newLibrary" Header="New Library" Click="mi_newLibrary_Click"/>
+            <MenuItem Name="mi_saveLibrary" Header="Save Library" Click="mi_saveLibrary_Click"/>
+            <MenuItem Name="mi_loadLibrary" Header="Load Library" Click="mi_loadLibrary_Click"/>
+        </Menu>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="20" Margin="5">
+            <TextBlock Text="Bundle: "/>
+            <TextBox Name="tb_bundleName" MinWidth="100" TextChanged="tb_bundleName_TextChanged"/>
+            <TextBlock Text="Library: "/>
+            <TextBox Name="tb_libraryName" MinWidth="100" TextChanged="tb_libraryName_TextChanged"/>
+        </StackPanel>
+        <DockPanel Name="dp_resourceView" DockPanel.Dock="Left" Width="200" Margin="5">
+            <Menu DockPanel.Dock="Bottom" Height="20">
+                <MenuItem Name="mi_libraryView_new" Click="mi_libraryView_new_Click" Header="New"/>
+                <MenuItem Name="mi_libraryView_copy" Click="mi_libraryView_copy_Click" Header="Copy"/>
+                <MenuItem Name="mi_libraryView_delete" Click="mi_libraryView_delete_Click" Header="Delete"/>
+                <MenuItem Name="mi_libraryView_sort" Click="mi_libraryView_sort_Click" Header="Sort A-Z"/>
+            </Menu>
+            <ListView Name="lv_resourceList" DockPanel.Dock="Top" SelectionChanged="lv_resourceList_SelectionChanged">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Object" Width="200" DisplayMemberBinding="{Binding name}" />
+                        <GridView.ColumnHeaderContainerStyle>
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            </Style>
+                        </GridView.ColumnHeaderContainerStyle>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
+        <Grid Name="dp_resourceProperties" DockPanel.Dock="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0" Margin="5">
+                <TextBlock Text="Name:" Margin="5" DockPanel.Dock="Top"/>
+                <TextBox Name="tb_resourceName" Margin="5" DockPanel.Dock="Top" TextChanged="tb_resourceName_TextChanged"/>
+                <Menu DockPanel.Dock="Bottom" Height="20">
+                    <MenuItem Name="mi_operations_new" Click="mi_libraryView_new_Click" Header="New"/>
+                    <MenuItem Name="mi_operations_copy" Click="mi_libraryView_copy_Click" Header="Copy"/>
+                    <MenuItem Name="mi_operations_delete" Click="mi_libraryView_delete_Click" Header="Delete"/>
+                    <MenuItem Name="mi_operations_sort" Click="mi_libraryView_sort_Click" Header="Sort A-Z"/>
+                </Menu>
+                <ListView Name="lv_operationsList" DockPanel.Dock="Top" SelectionChanged="lv_operationsList_SelectionChanged">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Operation" Width="200" DisplayMemberBinding="{Binding name}" />
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style TargetType="GridViewColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+            <StackPanel Grid.Column="1" Margin="5">
+                
+                <TextBox Name="tb_resourceWeight" Margin="5" Height="20" TextChanged="tb_resourceWeight_TextChanged"/>
+            </StackPanel>
+        </Grid>
+
+    </DockPanel>
+</Window>
