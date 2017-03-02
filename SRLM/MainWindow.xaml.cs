@@ -50,10 +50,17 @@ namespace SRLM {
         }
 
         private void mi_libraryView_copy_Click(object sender, RoutedEventArgs e) {
+            if (lv_resourceList.SelectedIndex >= 0) {
+                StarpointResource selected = lv_resourceList.SelectedItem as StarpointResource;
+                library.AddResource(new StarpointResource(selected.name, selected.weight));
+            }
             Update();
         }
 
         private void mi_libraryView_delete_Click(object sender, RoutedEventArgs e) {
+            if (lv_resourceList.SelectedIndex >= 0) {
+                library.resourceList.Remove(lv_resourceList.SelectedItem as StarpointResource);
+            }
             Update();
         }
 
@@ -63,8 +70,12 @@ namespace SRLM {
         }
 
         private void mi_saveLibrary_Click(object sender, RoutedEventArgs e) {
-            library.Save();
-            Update();
+            if ((from StarpointResource s in library.resourceList select s.name).Count() != (from StarpointResource s in library.resourceList select s.name).Distinct().Count()) {
+                MessageBox.Show("All Resources must have unique names!");
+            } else {
+                library.Save();
+                Update();
+            }
         }
 
         private void mi_loadLibrary_Click(object sender, RoutedEventArgs e) {
@@ -117,6 +128,20 @@ namespace SRLM {
                     tb_resourceWeight.CaretIndex = tb_resourceWeight.Text.Length;
                 }
             }
+        }
+
+        private void mi_libraryView_sort_Click(object sender, RoutedEventArgs e) {
+            library.resourceList.Sort(delegate(StarpointResource x, StarpointResource y) {
+                if (x.name == null && y.name == null)
+                    return 0;
+                else if (x.name == null)
+                    return -1;
+                else if (y.name == null)
+                    return 1;
+                else
+                    return x.name.CompareTo(y.name);
+            });
+            Update();
         }
     }
 }

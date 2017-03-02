@@ -23,6 +23,7 @@
                 <MenuItem Name="mi_libraryView_new" Click="mi_libraryView_new_Click" Header="New"/>
                 <MenuItem Name="mi_libraryView_copy" Click="mi_libraryView_copy_Click" Header="Copy"/>
                 <MenuItem Name="mi_libraryView_delete" Click="mi_libraryView_delete_Click" Header="Delete"/>
+                <MenuItem Name="mi_libraryView_sort" Click="mi_libraryView_sort_Click" Header="Sort A-Z"/>
             </Menu>
             <ListView Name="lv_resourceList" DockPanel.Dock="Top" SelectionChanged="lv_resourceList_SelectionChanged">
                 <ListView.View>

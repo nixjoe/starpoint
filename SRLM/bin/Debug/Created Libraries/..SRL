@@ -2,24 +2,24 @@
 <SRL xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <resourceList>
     <StarpointResource>
+      <name>aResource 4</name>
+      <weight>0</weight>
+    </StarpointResource>
+    <StarpointResource>
+      <name>bResource 3</name>
+      <weight>0</weight>
+    </StarpointResource>
+    <StarpointResource>
       <name>Resource 1</name>
-      <weight>5</weight>
+      <weight>0</weight>
     </StarpointResource>
     <StarpointResource>
-      <name>Resource 2f</name>
-      <weight>6</weight>
+      <name>Resource 2</name>
+      <weight>0</weight>
     </StarpointResource>
     <StarpointResource>
-      <name>Resource 3gfbg</name>
-      <weight>54.23</weight>
-    </StarpointResource>
-    <StarpointResource>
-      <name>Resource 4</name>
-      <weight>4560</weight>
-    </StarpointResource>
-    <StarpointResource>
-      <name>Resource 5</name>
-      <weight>650</weight>
+      <name>Resource 1d</name>
+      <weight>0</weight>
     </StarpointResource>
   </resourceList>
   <name />
