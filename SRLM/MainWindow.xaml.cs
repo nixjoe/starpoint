@@ -41,10 +41,6 @@ namespace SRLM {
                 lv_resourceList.ItemsSource = library.resourceList;
                 lv_resourceList.Items.Refresh();
             }
-            if (lv_resourceList.SelectedItem != null) {
-                tb_resourceName.Text = (lv_resourceList.SelectedItem as StarpointResource).name;
-                tb_resourceWeight.Text = (lv_resourceList.SelectedItem as StarpointResource).weight.ToString();
-            }
 
         }
         private void mi_libraryView_new_Click(object sender, RoutedEventArgs e) {
@@ -87,6 +83,40 @@ namespace SRLM {
                 library.bundleName = tb_bundleName.Text;
             }
             Update();
+        }
+
+        private void lv_resourceList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_resourceList.SelectedIndex >= 0) {
+                tb_resourceName.IsEnabled = true;
+                tb_resourceWeight.IsEnabled = true;
+                tb_resourceName.Text = (lv_resourceList.SelectedItem as StarpointResource).name;
+                tb_resourceWeight.Text = (lv_resourceList.SelectedItem as StarpointResource).weight.ToString();
+            } else {
+                tb_resourceName.IsEnabled = false;
+                tb_resourceWeight.IsEnabled = false;
+                tb_resourceName.Text ="";
+                tb_resourceWeight.Text = "";
+            }
+        }
+
+        private void tb_resourceName_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_resourceList.SelectedIndex >= 0) {
+                (lv_resourceList.SelectedItem as StarpointResource).name = tb_resourceName.Text;
+                Update();
+            }
+        }
+
+        private void tb_resourceWeight_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_resourceList.SelectedIndex >= 0) {
+                float parsedVal;
+                if (float.TryParse(tb_resourceWeight.Text, out parsedVal)) {
+                    (lv_resourceList.SelectedItem as StarpointResource).weight = parsedVal;
+                    Update();
+                } else {
+                    tb_resourceWeight.Text = (lv_resourceList.SelectedItem as StarpointResource).weight.ToString();
+                    tb_resourceWeight.CaretIndex = tb_resourceWeight.Text.Length;
+                }
+            }
         }
     }
 }

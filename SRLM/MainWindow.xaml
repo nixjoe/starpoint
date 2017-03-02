@@ -24,7 +24,7 @@
                 <MenuItem Name="mi_libraryView_copy" Click="mi_libraryView_copy_Click" Header="Copy"/>
                 <MenuItem Name="mi_libraryView_delete" Click="mi_libraryView_delete_Click" Header="Delete"/>
             </Menu>
-            <ListView Name="lv_resourceList" DockPanel.Dock="Top">
+            <ListView Name="lv_resourceList" DockPanel.Dock="Top" SelectionChanged="lv_resourceList_SelectionChanged">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Resource" Width="200" DisplayMemberBinding="{Binding name}" />
@@ -47,8 +47,8 @@
                 <TextBlock Text="Weight per unit" Margin="5" Height="20"/>
             </StackPanel>
             <StackPanel Grid.Column="1" Margin="5">
-                <TextBox Name="tb_resourceName" Margin="5" Height="20"/>
-                <TextBox Name="tb_resourceWeight" Margin="5" Height="20"/>
+                <TextBox Name="tb_resourceName" Margin="5" Height="20" TextChanged="tb_resourceName_TextChanged"/>
+                <TextBox Name="tb_resourceWeight" Margin="5" Height="20" TextChanged="tb_resourceWeight_TextChanged"/>
             </StackPanel>
         </Grid>
 
