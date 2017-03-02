@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
+using Microsoft.Win32;
 
 namespace SRLM {
     /// <summary>
@@ -28,6 +29,7 @@ namespace SRLM {
             DataContext = this;
             Update();
         }
+
         public void Update() {
 
             tb_libraryName.IsEnabled = library != null;
@@ -51,6 +53,7 @@ namespace SRLM {
             }
 
         }
+
         private void mi_libraryView_new_Click(object sender, RoutedEventArgs e) {
             hasChangedSinceSave = true;
             string name = "Resource " + (library.resourceList.Count + 1);
@@ -76,6 +79,12 @@ namespace SRLM {
         }
 
         private void mi_newLibrary_Click(object sender, RoutedEventArgs e) {
+            if (hasChangedSinceSave) {
+                if (MessageBox.Show("There are unsaved changes in the library! Are you sure you want to close this library?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) {
+                    return;
+                }
+            }
+            hasChangedSinceSave = false;
             library = new SRL();
             Update();
         }
@@ -95,8 +104,20 @@ namespace SRLM {
         }
 
         private void mi_loadLibrary_Click(object sender, RoutedEventArgs e) {
-            hasChangedSinceSave = false;
-            Update();
+            if (hasChangedSinceSave) {
+                if (MessageBox.Show("There are unsaved changes in the library! Are you sure you want to close this library?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) {
+                    return;
+                }
+            }
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = Environment.CurrentDirectory + @"\Created Libraries";
+            dialog.CheckFileExists = true;
+            if (dialog.ShowDialog() == true) {
+                library = SRL.Load(dialog.FileName);
+                hasChangedSinceSave = false;
+                Update();
+            }
+            
         }
 
         private void tb_libraryName_TextChanged(object sender, TextChangedEventArgs e) {
@@ -129,7 +150,7 @@ namespace SRLM {
         }
 
         private void tb_resourceName_TextChanged(object sender, TextChangedEventArgs e) {
-            if (lv_resourceList.SelectedIndex >= 0) {
+            if (lv_resourceList.SelectedIndex >= 0 && (lv_resourceList.SelectedItem as StarpointResource).name != tb_resourceName.Text) {
                 (lv_resourceList.SelectedItem as StarpointResource).name = tb_resourceName.Text;
                 hasChangedSinceSave = true;
                 Update();
@@ -140,8 +161,10 @@ namespace SRLM {
             if (lv_resourceList.SelectedIndex >= 0) {
                 float parsedVal;
                 if (float.TryParse(tb_resourceWeight.Text, out parsedVal)) {
-                    (lv_resourceList.SelectedItem as StarpointResource).weight = parsedVal;
-                    hasChangedSinceSave = true;
+                    if (parsedVal != (lv_resourceList.SelectedItem as StarpointResource).weight) {
+                        (lv_resourceList.SelectedItem as StarpointResource).weight = parsedVal;
+                        hasChangedSinceSave = true;
+                    }
                     Update();
                 } else {
                     tb_resourceWeight.Text = (lv_resourceList.SelectedItem as StarpointResource).weight.ToString();
