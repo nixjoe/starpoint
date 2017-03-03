@@ -89,5 +89,13 @@ namespace SOLM {
         private void mi_operations_sort_Click(object sender, RoutedEventArgs e) {
 
         }
+
+        private void lv_propertiesList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+
+        }
+
+        private void lv_effectList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+
+        }
     }
 }

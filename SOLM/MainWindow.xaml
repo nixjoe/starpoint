@@ -14,10 +14,9 @@
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
         <DockPanel Name="dp_resourceView" Grid.Column="0" MinWidth="200" Margin="5">
             <TextBlock Text="Library" FontWeight="Bold" FontSize="16" DockPanel.Dock="Top"/>
@@ -68,19 +67,88 @@
                     <MenuItem Name="mi_operations_delete" Click="mi_operations_delete_Click" Header="Delete"/>
                     <MenuItem Name="mi_operations_sort" Click="mi_operations_sort_Click" Header="Sort A-Z"/>
                 </Menu>
-                <ListView Name="lv_operationsList" DockPanel.Dock="Top" SelectionChanged="lv_operationsList_SelectionChanged">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Operations" Width="200" DisplayMemberBinding="{Binding name}" />
-                            <GridView.ColumnHeaderContainerStyle>
-                                <Style TargetType="GridViewColumnHeader">
-                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
-                                </Style>
-                            </GridView.ColumnHeaderContainerStyle>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <TabControl DockPanel.Dock="Top" >
+                    <TabItem Name="ti_operationList" Header="Operations">
+                        <ListView Name="lv_operationsList" SelectionChanged="lv_operationsList_SelectionChanged">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Operations" Width="200" DisplayMemberBinding="{Binding name}" />
+                                    <GridView.ColumnHeaderContainerStyle>
+                                        <Style TargetType="GridViewColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                        </Style>
+                                    </GridView.ColumnHeaderContainerStyle>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
+                    <TabItem Name="ti_propertiesList" Header="Properties">
+                        <ListView Name="lv_propertiesList" SelectionChanged="lv_propertiesList_SelectionChanged">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Properties" Width="200" DisplayMemberBinding="{Binding name}" />
+                                    <GridView.ColumnHeaderContainerStyle>
+                                        <Style TargetType="GridViewColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                        </Style>
+                                    </GridView.ColumnHeaderContainerStyle>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
+                </TabControl>
+
             </DockPanel>
+            <DockPanel Grid.Column="2">
+                <TabControl>
+                    <TabItem Header="Operation" FontSize="16" FontWeight="Bold">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0">
+                                <Grid DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Name:" Grid.Column="0" FontWeight="Regular" FontSize="12" Height="20"/>
+                                        <TextBlock Text="Action Type:" Grid.Column="0" FontWeight="Regular" FontSize="12" Height="20"/>
+                                        <TextBlock Text="Trigger Type:" Grid.Column="0" FontWeight="Regular" FontSize="12" Height="20"/> 
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBox Name="tb_operationName" Height="20"/>
+                                        <ComboBox Name="cb_operationActionType" Height="20"/>
+                                        <ComboBox Name="cb_operationTrigger" Height="20"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ListView Name="lv_effectList" SelectionChanged="lv_effectList_SelectionChanged" DockPanel.Dock="Bottom" FontWeight="Regular" FontSize="12">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Effects" Width="200" DisplayMemberBinding="{Binding name}" />
+                                            <GridView.ColumnHeaderContainerStyle>
+                                                <Style TargetType="GridViewColumnHeader">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                                </Style>
+                                            </GridView.ColumnHeaderContainerStyle>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
+                            <DockPanel Grid.Column="1">
+                                <TextBlock Text="Effect" FontWeight="Bold" FontSize="16" DockPanel.Dock="Top"/>
+                            </DockPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Property" FontSize="16" FontWeight="Bold">
+
+                    </TabItem>
+                </TabControl>
+                <!--<TextBlock Text="Operation" FontWeight="Bold" FontSize="16" DockPanel.Dock="Top"/>-->
+            </DockPanel>
+            
         </Grid>
     </DockPanel>
 </Window>

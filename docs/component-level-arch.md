@@ -1,4 +1,4 @@
-**Starpoint Object Libraries**
+﻿**Starpoint Object Libraries**
 
 All items shall be
 managed with Starpoint Object Libraries (SOLs) made with a custom tool, the Starpoint Object Library Manager (SOLM)
@@ -52,7 +52,7 @@ Hardware has three
 types of properties:
 
 
-*State Variables*
+*Properties*
 
 - state variables are internal variables that are utilized by operations. Examples include:
    - Ammo in magazine
