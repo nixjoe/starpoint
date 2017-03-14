@@ -74,23 +74,21 @@ types of properties:
 
 - Actions define the way the
      hardware works. There are 2 action types and 3 trigger modes:
-    - Action type discrete: each
-      firing of the action is an independent action, such as firing a bullet.
+    - **Action type discrete: **
+      each firing of the action is an independent action, such as firing a bullet.
         - Resources Consumed (per trigger)
         - Cooldown time
-    - Action type continuous: the action
-      is continuous as long as the input is triggered. Example: firing a
+    - **Action type continuous: **
+      the action is continuous as long as the input is triggered. Example: firing a
       thruster
         - Resources consumed (per second)
-    - Trigger mode automatic
-      (valid for discrete and continuous): continuously trigger as long as
+    - **Trigger mode automatic** (valid for discrete and continuous): 
+      continuously trigger as long as
       input is valid, and hardware is cooled down
-    - Trigger mode passive (valid
-      for discrete and continuous): Always active for continuous, or,
-      happens every x interval for discrete.
-    - Trigger mode semi-auto
-      (valid for discrete only): happens only once per input flip to
-      valid, on the leading edge of input.
+    - **Trigger mode passive** (valid for discrete and continuous):  
+      Always active for continuous, or, happens every x interval for discrete.
+    - **Trigger mode semi-auto** (valid for discrete only):  
+      happens only once per input flip to valid, on the leading edge of input.
 - Effects
     - Effects are the things that
       happen when an action is triggered, e.g. consuming fuel, showing engine

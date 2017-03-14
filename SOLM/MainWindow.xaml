@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SOLM"
         mc:Ignorable="d"
-        Title="Starpoint Object Library Manager" Height="172.609" Width="241.739" MinHeight="350" MinWidth="900">
+        Title="Starpoint Object Library Manager" Height="262.663" Width="543.195" MinHeight="350" MinWidth="900">
     <DockPanel>
         <Menu DockPanel.Dock="Top" Height="20">
             <MenuItem Name="mi_newLibrary" Header="New Library" Click="mi_newLibrary_Click"/>
@@ -18,33 +18,33 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-        <DockPanel Name="dp_resourceView" Grid.Column="0" MinWidth="200" Margin="5">
-            <TextBlock Text="Library" FontWeight="Bold" FontSize="16" DockPanel.Dock="Top"/>
-            <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Margin="5">
-                <TextBlock Text="Bundle: "/>
-                <TextBox Name="tb_bundleName" MinWidth="100" TextChanged="tb_bundleName_TextChanged"/>
-                <TextBlock Text=" Library: "/>
-                <TextBox Name="tb_libraryName" MinWidth="100" TextChanged="tb_libraryName_TextChanged"/>
-            </StackPanel>
-            <Menu DockPanel.Dock="Bottom" Height="20">
-                <MenuItem Name="mi_libraryView_new" Click="mi_libraryView_new_Click" Header="New"/>
-                <MenuItem Name="mi_libraryView_copy" Click="mi_libraryView_copy_Click" Header="Copy"/>
-                <MenuItem Name="mi_libraryView_delete" Click="mi_libraryView_delete_Click" Header="Delete"/>
-                <MenuItem Name="mi_libraryView_sort" Click="mi_libraryView_sort_Click" Header="Sort A-Z"/>
-            </Menu>
-            <ListView Name="lv_objectList" DockPanel.Dock="Top" SelectionChanged="lv_objectList_SelectionChanged">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Objects" Width="200" DisplayMemberBinding="{Binding name}" />
-                        <GridView.ColumnHeaderContainerStyle>
-                            <Style TargetType="GridViewColumnHeader">
-                                <Setter Property="HorizontalContentAlignment" Value="Left" />
-                            </Style>
-                        </GridView.ColumnHeaderContainerStyle>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </DockPanel>
+            <DockPanel Name="dp_resourceView" Grid.Column="0" MinWidth="200" Margin="5">
+                <TextBlock Text="Library" FontWeight="Bold" FontSize="16" DockPanel.Dock="Top"/>
+                <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Margin="5">
+                    <TextBlock Text="Bundle: "/>
+                    <TextBox Name="tb_bundleName" MinWidth="100" TextChanged="tb_bundleName_TextChanged"/>
+                    <TextBlock Text=" Library: "/>
+                    <TextBox Name="tb_libraryName" MinWidth="100" TextChanged="tb_libraryName_TextChanged"/>
+                </StackPanel>
+                <Menu DockPanel.Dock="Bottom" Height="20">
+                    <MenuItem Name="mi_libraryView_new" Click="mi_libraryView_new_Click" Header="New"/>
+                    <MenuItem Name="mi_libraryView_copy" Click="mi_libraryView_copy_Click" Header="Copy"/>
+                    <MenuItem Name="mi_libraryView_delete" Click="mi_libraryView_delete_Click" Header="Delete"/>
+                    <MenuItem Name="mi_libraryView_sort" Click="mi_libraryView_sort_Click" Header="Sort A-Z"/>
+                </Menu>
+                <ListView Name="lv_objectList" DockPanel.Dock="Top" SelectionChanged="lv_objectList_SelectionChanged">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Objects" Width="200" DisplayMemberBinding="{Binding name}" />
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style TargetType="GridViewColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
             <DockPanel Grid.Column="1" Margin="5">
                 <TextBlock Text="Object" FontWeight="Bold" FontSize="16" DockPanel.Dock="Top"/>
                 <Grid DockPanel.Dock="Top">
@@ -67,12 +67,14 @@
                     <MenuItem Name="mi_operations_delete" Click="mi_operations_delete_Click" Header="Delete"/>
                     <MenuItem Name="mi_operations_sort" Click="mi_operations_sort_Click" Header="Sort A-Z"/>
                 </Menu>
-                <TabControl DockPanel.Dock="Top" >
+                <TabControl DockPanel.Dock="Top" Name="tc_objectTabControl" SelectionChanged="tc_objectTabControl_SelectionChanged">
                     <TabItem Name="ti_operationList" Header="Operations">
                         <ListView Name="lv_operationsList" SelectionChanged="lv_operationsList_SelectionChanged">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Operations" Width="200" DisplayMemberBinding="{Binding name}" />
+                                    <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding name}" />
+                                    <GridViewColumn Header="Type"  DisplayMemberBinding="{Binding name}" />
+                                    <GridViewColumn Header="Trig."  DisplayMemberBinding="{Binding name}" />
                                     <GridView.ColumnHeaderContainerStyle>
                                         <Style TargetType="GridViewColumnHeader">
                                             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -86,7 +88,8 @@
                         <ListView Name="lv_propertiesList" SelectionChanged="lv_propertiesList_SelectionChanged">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Properties" Width="200" DisplayMemberBinding="{Binding name}" />
+                                    <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding name}" />
+                                    <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding type}" />
                                     <GridView.ColumnHeaderContainerStyle>
                                         <Style TargetType="GridViewColumnHeader">
                                             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -100,8 +103,11 @@
 
             </DockPanel>
             <DockPanel Grid.Column="2">
-                <TabControl>
-                    <TabItem Header="Operation" FontSize="16" FontWeight="Bold">
+                <TabControl Name="tc_opPropTabControl" SelectionChanged="tc_opPropTabControl_SelectionChanged">
+                    <TabItem >
+                        <TabItem.Header>
+                            <TextBlock Text="Operation" FontSize="16" FontWeight="Bold"/>
+                        </TabItem.Header>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -110,20 +116,26 @@
                             <DockPanel Grid.Column="0">
                                 <Grid DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Name:" Grid.Column="0" FontWeight="Regular" FontSize="12" Height="20"/>
-                                        <TextBlock Text="Action Type:" Grid.Column="0" FontWeight="Regular" FontSize="12" Height="20"/>
-                                        <TextBlock Text="Trigger Type:" Grid.Column="0" FontWeight="Regular" FontSize="12" Height="20"/> 
+                                        <TextBlock Text="Name:" Grid.Column="0" Margin="5" Height="20"/>
+                                        <TextBlock Text="Action Type:" Grid.Column="0" Margin="5" Height="20"/>
+                                        <TextBlock Text="Trigger Type:" Grid.Column="0" Margin="5" Height="20"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
-                                        <TextBox Name="tb_operationName" Height="20"/>
-                                        <ComboBox Name="cb_operationActionType" Height="20"/>
-                                        <ComboBox Name="cb_operationTrigger" Height="20"/>
+                                        <TextBox Name="tb_operationName" Height="20" Margin="5"/>
+                                        <ComboBox Name="cb_operation_actionType" Height="20" Margin="5"/>
+                                        <ComboBox Name="cb_operation_trigger" Height="20" Margin="5"/>
                                     </StackPanel>
                                 </Grid>
+                                <Menu DockPanel.Dock="Bottom" Height="20">
+                                    <MenuItem Name="mi_effects_new" Click="mi_effects_new_Click" Header="New"/>
+                                    <MenuItem Name="mi_effects_copy" Click="mi_effects_copy_Click" Header="Copy"/>
+                                    <MenuItem Name="mi_effects_delete" Click="mi_effects_delete_Click" Header="Delete"/>
+                                    <MenuItem Name="mi_effects_sort" Click="mi_effects_sort_Click" Header="Sort A-Z"/>
+                                </Menu>
                                 <ListView Name="lv_effectList" SelectionChanged="lv_effectList_SelectionChanged" DockPanel.Dock="Bottom" FontWeight="Regular" FontSize="12">
                                     <ListView.View>
                                         <GridView>
@@ -142,13 +154,29 @@
                             </DockPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Property" FontSize="16" FontWeight="Bold">
-
+                    <TabItem>
+                        <TabItem.Header>
+                            <TextBlock Text="Property" FontSize="16" FontWeight="Bold"/>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" >
+                                <TextBlock Text="Name:" Margin="5" Height="20"/>
+                                <TextBlock Text="Property Type:" Margin="5" Height="20"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" >
+                                <TextBox Name="tb_property_name" Margin="5" Height="20"/>
+                                <ComboBox Name="cb_property_type" Margin="5" Height="20"/>
+                            </StackPanel>
+                        </Grid>
                     </TabItem>
                 </TabControl>
                 <!--<TextBlock Text="Operation" FontWeight="Bold" FontSize="16" DockPanel.Dock="Top"/>-->
             </DockPanel>
-            
+
         </Grid>
     </DockPanel>
 </Window>
