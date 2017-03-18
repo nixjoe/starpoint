@@ -55,7 +55,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Effect.cs" />
+    <Compile Include="Operation.cs" />
+    <Compile Include="Property.cs" />
     <Compile Include="PropertyEnumValue.cs" />
+    <Compile Include="Requirement.cs" />
+    <Compile Include="SOL.cs" />
+    <Compile Include="StarpointCollider.cs" />
+    <Compile Include="StarpointObject.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
