@@ -3,14 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SOLM {
-    public abstract class Property {
-        public string name;
-        public bool visible;
+    [XmlInclude(typeof(IntegerProperty)), XmlInclude(typeof(ContainerProperty)), XmlInclude(typeof(RealProperty)), XmlInclude(typeof(EnumProperty))]
+    public class Property {
+        public string name { get; set; }
+        public bool visible { get; set; }
         public string description;
+        public enum PropertyType { NULL, Container, Integer, Real, Enum };
+        public PropertyType type {
+            get {
+                if (this is ContainerProperty) {
+                    return PropertyType.Container;
+                } else if (this is IntegerProperty) {
+                    return PropertyType.Integer;
+                } else if (this is RealProperty) {
+                    return PropertyType.Real;
+                } else if (this is EnumProperty) {
+                    return PropertyType.Enum;
+                } else {
+                    return PropertyType.NULL;
+                }
+            }
+        }
         public Property() {
-            name = "NewProperty";
+            name = "New Property";
             visible = false;
             description = "";
         }

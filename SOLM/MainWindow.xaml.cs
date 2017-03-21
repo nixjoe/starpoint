@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+//using System.Windows.Shapes;
+using System.Xml.Serialization;
+using Microsoft.Win32;
 
 namespace SOLM {
 
@@ -21,42 +24,35 @@ namespace SOLM {
     public partial class MainWindow : Window {
         SOL sol;
         public MainWindow() {
-
             InitializeComponent();
-            cb_operation_actionType.ItemsSource = new string[] { "Discrete", "Continuous" };
-            cb_operation_trigger.ItemsSource = new string[] { "Auto", "Semiauto", "Passive" };
-            cb_effect_type.ItemsSource = new string[] { "Property", "Resource", "Physical", "Audio", "Visual", "Object" };
-            cb_effect_assignment.ItemsSource = new string[] { "Equals", "Additive", "Subractive", "Multiplicative" };
-            cb_property_type.ItemsSource = new string[] { "Container", "Integer", "Real", "Enum" };
-            cb_requirement_comparison.ItemsSource = new string[] { "=", "<", ">", "<=", ">=", "!=" };
-            cb_requirement_type.ItemsSource = new string[] { "Resource", "Property" };
-            cb_effect_audioMode.ItemsSource = new string[] { "Play Once", "Loop" };
-            cb_effect_physicalType.ItemsSource = new string[] { "AbsoluteForce", "RelativeForce", "Torque" };
-            cb_collider_shape.ItemsSource = new string[] { "Cube", "Sphere", "Capsule", "Cylinder" };
-
+            cb_operation_actionType.ItemsSource = new List<string>(new string[] { "Discrete", "Continuous" });
+            cb_operation_trigger.ItemsSource = new List<string>(new string[] { "Auto", "Semiauto", "Passive" });
+            cb_effect_type.ItemsSource = new List<string>(new string[] { "Property", "Resource", "Physical", "Audio", "Visual", "Object" });
+            cb_effect_assignment.ItemsSource = new List<string>(new string[] { "Equals", "Additive", "Subractive", "Multiplicative" });
+            cb_property_type.ItemsSource = new List<string>(new string[] { "Container", "Integer", "Real", "Enum" });
+            cb_requirement_comparison.ItemsSource = new List<string>(new string[] { "=", "<", ">", "<=", ">=", "!=" });
+            cb_requirement_type.ItemsSource = new List<string>(new string[] { "Resource", "Property" });
+            cb_effect_audioMode.ItemsSource = new List<string>(new string[] { "Play Once", "Loop" });
+            cb_effect_physicalType.ItemsSource = new List<string>(new string[] { "AbsoluteForce", "RelativeForce", "Torque" });
+            cb_collider_shape.ItemsSource = new List<string>(new string[] { "Cube", "Sphere", "Capsule", "Cylinder" });
+            Directory.CreateDirectory(Environment.CurrentDirectory + @"\Created Libraries");
             sol = new SOL();
             lv_objectList.ItemsSource = sol.objects;
             Refresh();
         }
         private void Refresh() {
+            int lv_propertiesList_selectedIndex = lv_propertiesList.SelectedIndex;
+            tb_libraryName.Text = sol.name;
+            tb_bundleName.Text = sol.bundle;
             lv_objectList.Items.Refresh();
             lv_operationsList.Items.Refresh();
             lv_propertiesList.Items.Refresh();
             lv_requirementList.Items.Refresh();
             lv_effectList.Items.Refresh();
             lv_collidersList.Items.Refresh();
-        }
-        private void lv_operationsList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-
-        }
-        private void mi_newLibrary_Click(object sender, RoutedEventArgs e) {
-
-        }
-        private void mi_saveLibrary_Click(object sender, RoutedEventArgs e) {
-
-        }
-        private void mi_loadLibrary_Click(object sender, RoutedEventArgs e) {
-
+            if (lv_propertiesList.SelectedIndex <= lv_propertiesList.Items.Count) {
+                lv_propertiesList.SelectedIndex = lv_propertiesList_selectedIndex;
+            }
         }
         private void mi_objects_sort_Click(object sender, RoutedEventArgs e) {
 
@@ -65,7 +61,29 @@ namespace SOLM {
 
         }
         private void lv_propertiesList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-
+            if (lv_propertiesList.SelectedItem != null) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                tb_property_name.Text = p.name;
+                if (p is ContainerProperty) {
+                    cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Container");
+                    tb_property_uBound.Text = (p as ContainerProperty).uBound.ToString();
+                    tb_property_containerResource.Text = (p as ContainerProperty).resource;
+                } else if (p is IntegerProperty) {
+                    cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Integer");
+                    tb_property_uBound.Text = (p as IntegerProperty).uBound.ToString();
+                    tb_property_lBound.Text = (p as IntegerProperty).lBound.ToString();
+                } else if (p is RealProperty) {
+                    cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Real");
+                    tb_property_uBound.Text = (p as RealProperty).uBound.ToString();
+                    tb_property_lBound.Text = (p as RealProperty).lBound.ToString();
+                } else if (p is EnumProperty) {
+                    cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Enum");
+                    dg_property_enumValues.ItemsSource = (p as EnumProperty).enums;
+                    dg_property_enumValues.Items.Refresh();
+                }
+                tb_property_description.Text = p.description;
+                cb_property_visible.IsChecked = p.visible;
+            }
         }
         private void lv_effectList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 
@@ -79,9 +97,7 @@ namespace SOLM {
         private void lv_requirementList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 
         }
-        private void tb_objectModel_TextChanged(object sender, TextChangedEventArgs e) {
 
-        }
         private void lv_collidersList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 
         }
@@ -91,35 +107,31 @@ namespace SOLM {
         private void mi_colliders_sort_Click(object sender, RoutedEventArgs e) {
 
         }
+        private void b_loadModel_Click(object sender, RoutedEventArgs e) {
+
+        }
         #region completed and stable
         private void NewItem(ListView listView) {
             if (listView == lv_objectList && lv_objectList.ItemsSource != null) {
                 (lv_objectList.ItemsSource as List<StarpointObject>).Add(new StarpointObject());
-                lv_objectList.Items.Refresh();
             } else if (listView == lv_operationsList && lv_operationsList.ItemsSource != null) {
                 (lv_operationsList.ItemsSource as List<Operation>).Add(new Operation());
-                lv_operationsList.Items.Refresh();
             } else if (listView == lv_propertiesList && lv_propertiesList.ItemsSource != null) {
                 (lv_propertiesList.ItemsSource as List<Property>).Add(new ContainerProperty());
-                lv_propertiesList.Items.Refresh();
             } else if (listView == lv_requirementList && lv_requirementList.ItemsSource != null) {
                 (lv_requirementList.ItemsSource as List<Requirement>).Add(new Requirement());
-                lv_requirementList.Items.Refresh();
             } else if (listView == lv_effectList && lv_effectList.ItemsSource != null) {
                 (lv_effectList.ItemsSource as List<Effect>).Add(new Effect());
-                lv_effectList.Items.Refresh();
             } else if (listView == lv_collidersList && lv_collidersList.ItemsSource != null) {
                 (lv_collidersList.ItemsSource as List<StarpointCollider>).Add(new Cube());
-                lv_effectList.Items.Refresh();
             }
+            Refresh();
         }
         private void CopyItem(ListView listView) {
             if (listView == lv_objectList && lv_objectList.SelectedIndex != -1) {
                 (lv_objectList.ItemsSource as List<StarpointObject>).Add(new StarpointObject(lv_objectList.SelectedItem as StarpointObject));
-                lv_objectList.Items.Refresh();
             } else if (listView == lv_operationsList && lv_operationsList.SelectedIndex != -1) {
                 (lv_operationsList.ItemsSource as List<Operation>).Add(new Operation(lv_operationsList.SelectedItem as Operation));
-                lv_operationsList.Items.Refresh();
             } else if (listView == lv_propertiesList && lv_propertiesList.SelectedIndex != -1) {
                 Property p = lv_propertiesList.SelectedItem as Property;
                 if (p is ContainerProperty) {
@@ -131,13 +143,10 @@ namespace SOLM {
                 } else if (p is EnumProperty) {
                     (lv_propertiesList.ItemsSource as List<Property>).Add(new EnumProperty(p as EnumProperty));
                 }
-                lv_propertiesList.Items.Refresh();
             } else if (listView == lv_requirementList && lv_requirementList.SelectedIndex != -1) {
                 (lv_requirementList.ItemsSource as List<Requirement>).Add(new Requirement(lv_requirementList.SelectedItem as Requirement));
-                lv_requirementList.Items.Refresh();
             } else if (listView == lv_effectList && lv_effectList.SelectedIndex != -1) {
                 (lv_effectList.ItemsSource as List<Effect>).Add(new Effect(lv_effectList.SelectedItem as Effect));
-                lv_effectList.Items.Refresh();
             } else if (listView == lv_collidersList && lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider sc = lv_collidersList.SelectedItem as StarpointCollider;
                 if (sc is Cube) {
@@ -149,30 +158,24 @@ namespace SOLM {
                 } else {
                     (lv_collidersList.ItemsSource as List<StarpointCollider>).Add(new Cylinder(sc as Cylinder));
                 }
-
-                lv_collidersList.Items.Refresh();
             }
+            Refresh();
         }
         private void DeleteItem(ListView listView) {
             if (listView == lv_objectList && lv_objectList.SelectedIndex != -1) {
                 (lv_objectList.ItemsSource as List<StarpointObject>).RemoveAt(lv_objectList.SelectedIndex);
-                lv_objectList.Items.Refresh();
             } else if (listView == lv_operationsList && lv_operationsList.SelectedIndex != -1) {
                 (lv_operationsList.ItemsSource as List<Operation>).RemoveAt(lv_operationsList.SelectedIndex);
-                lv_operationsList.Items.Refresh();
             } else if (listView == lv_propertiesList && lv_propertiesList.SelectedIndex != -1) {
                 (lv_propertiesList.ItemsSource as List<Property>).RemoveAt(lv_propertiesList.SelectedIndex);
-                lv_propertiesList.Items.Refresh();
             } else if (listView == lv_requirementList && lv_requirementList.SelectedIndex != -1) {
                 (lv_requirementList.ItemsSource as List<Requirement>).RemoveAt(lv_requirementList.SelectedIndex);
-                lv_requirementList.Items.Refresh();
             } else if (listView == lv_effectList && lv_effectList.SelectedIndex != -1) {
                 (lv_effectList.ItemsSource as List<Effect>).RemoveAt(lv_effectList.SelectedIndex);
-                lv_effectList.Items.Refresh();
             } else if (listView == lv_collidersList && lv_effectList.SelectedIndex != -1) {
                 (lv_collidersList.ItemsSource as List<Effect>).RemoveAt(lv_collidersList.SelectedIndex);
-                lv_collidersList.Items.Refresh();
             }
+            Refresh();
         }
         private void tb_bundleName_TextChanged(object sender, TextChangedEventArgs e) {
             SanitizeString(tb_bundleName);
@@ -180,7 +183,7 @@ namespace SOLM {
         }
         private void tb_libraryName_TextChanged(object sender, TextChangedEventArgs e) {
             SanitizeString(tb_libraryName);
-            sol.bundle = tb_libraryName.Text;
+            sol.name = tb_libraryName.Text;
         }
         private void mi_colliders_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_collidersList);
@@ -193,7 +196,6 @@ namespace SOLM {
         }
         private void mi_properties_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_propertiesList);
-
         }
         private void mi_properties_copy_Click(object sender, RoutedEventArgs e) {
             CopyItem(lv_propertiesList);
@@ -350,17 +352,70 @@ namespace SOLM {
                     break;
             }
         }
+        private void lv_operationsList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_operationsList.SelectedItem != null) {
+                Operation o = lv_operationsList.SelectedItem as Operation;
+                tb_operationName.Text = o.name;
+                cb_operation_actionType.SelectedIndex = (cb_operation_actionType.ItemsSource as List<string>).IndexOf(o.action);
+                cb_operation_trigger.SelectedIndex = (cb_operation_trigger.ItemsSource as List<string>).IndexOf(o.trigger);
+                tb_operationCooldown.Text = o.cooldown.ToString();
+                tb_operationDescription.Text = o.description;
+                lv_requirementList.ItemsSource = o.requirements;
+                lv_effectList.ItemsSource = o.effects;
+                Refresh();
+            }
+        }
         private void cb_operation_actionType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if ((string)cb_operation_actionType.SelectedItem == "Continuous") {
-                cb_operation_trigger.ItemsSource = new string[] { "Auto", "Passive" };
-                cb_operation_trigger.Items.Refresh();
-                tb_operationCooldown.Visibility = Visibility.Collapsed;
-                tb_operationCooldownLabel.Visibility = Visibility.Collapsed;
-            } else {
-                cb_operation_trigger.ItemsSource = new string[] { "Auto", "Semiauto", "Passive" };
-                cb_operation_trigger.Items.Refresh();
-                tb_operationCooldown.Visibility = Visibility.Visible;
-                tb_operationCooldownLabel.Visibility = Visibility.Visible;
+            if (lv_operationsList.SelectedItem != null) {
+                Operation o = lv_operationsList.SelectedItem as Operation;
+                if ((string)cb_operation_actionType.SelectedItem == "Continuous") {
+                    cb_operation_trigger.ItemsSource = new List<string>(new string[] { "Auto", "Passive" });
+                    o.action = cb_operation_actionType.SelectedItem.ToString();
+                    if (o.trigger == "Semiauto") {
+                        cb_operation_trigger.SelectedIndex = 0;
+                        //o.action = "Auto";
+                    }
+                    cb_operation_trigger.Items.Refresh();
+                    tb_operationCooldown.Visibility = Visibility.Collapsed;
+                    tb_operationCooldownLabel.Visibility = Visibility.Collapsed;
+                } else {
+                    cb_operation_trigger.ItemsSource = new List<string>(new string[] { "Auto", "Semiauto", "Passive" });
+                    o.action = cb_operation_actionType.SelectedItem.ToString();
+                    cb_operation_trigger.Items.Refresh();
+                    tb_operationCooldown.Visibility = Visibility.Visible;
+                    tb_operationCooldownLabel.Visibility = Visibility.Visible;
+                }
+                Refresh();
+            }
+        }
+        private void tb_operationName_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_operationsList.SelectedItem != null) {
+                Operation o = lv_operationsList.SelectedItem as Operation;
+                o.name = tb_operationName.Text;
+                Refresh();
+            }
+        }
+        private void cb_operation_trigger_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_operationsList.SelectedItem != null && cb_operation_trigger.SelectedItem != null) {
+                Operation o = lv_operationsList.SelectedItem as Operation;
+                o.trigger = cb_operation_trigger.SelectedItem.ToString();
+                Refresh();
+            }
+        }
+        private void tb_operationCooldown_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_operationsList.SelectedIndex != -1) {
+                Operation o = lv_operationsList.SelectedItem as Operation;
+                float? value = SanitizeFloat(tb_operationCooldown);
+                if (value.HasValue) {
+                    o.cooldown = (float)value;
+                }
+            }
+        }
+        private void tb_operationDescription_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_operationsList.SelectedItem != null) {
+                Operation o = lv_operationsList.SelectedItem as Operation;
+                o.description = tb_operationDescription.Text;
+                Refresh();
             }
         }
         private void tc_object_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -416,19 +471,47 @@ namespace SOLM {
             DeleteItem(lv_operationsList);
         }
         private void lv_objectList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            tb_objectDryWeight.Background = Brushes.White;
-            if (lv_objectList.SelectedItem != null) {
-                StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
-                tb_objectName.Text = so.name;
-                tb_objectDryWeight.Text = so.dryWeight.ToString();
-            }
-        }
-        private void tb_objectName_TextChanged(object sender, TextChangedEventArgs e) {
+            tb_object_dryWeight.Background = Brushes.White;
             if (lv_objectList.SelectedIndex != -1) {
                 StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
-                SanitizeString(tb_objectName);
-                so.name = tb_objectName.Text;
+                tb_object_name.Text = so.name;
+                tb_object_dryWeight.Text = so.dryWeight.ToString();
+                tb_object_model.Text = so.model;
+                lv_collidersList.ItemsSource = so.colliders;
+                lv_propertiesList.ItemsSource = so.properties;
+                lv_operationsList.ItemsSource = so.operations;
                 Refresh();
+            } else {
+                tb_object_name.Text = "";
+                tb_object_dryWeight.Text = "";
+                tb_object_model.Text = "";
+                lv_collidersList.ItemsSource = null;
+                lv_propertiesList.ItemsSource = null;
+                lv_operationsList.ItemsSource = null;
+            }
+        }
+        private void tb_object_name_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_objectList.SelectedItem != null) {
+                StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
+                so.name = tb_object_name.Text;
+                Refresh();
+            }
+        }
+        private void tb_object_model_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_objectList.SelectedIndex != -1) {
+                StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
+                SanitizeString(tb_object_model);
+                so.model = tb_object_model.Text;
+                Refresh();
+            }
+        }
+        private void tb_object_dryWeight_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_objectList.SelectedIndex != -1) {
+                StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
+                float? value = SanitizeFloat(tb_object_dryWeight);
+                if (value.HasValue) {
+                    so.dryWeight = (float)value;
+                }
             }
         }
         private void mi_objects_new_Click(object sender, RoutedEventArgs e) {
@@ -441,7 +524,7 @@ namespace SOLM {
             DeleteItem(lv_objectList);
         }
         private void SanitizeString(TextBox textbox) {
-            textbox.Text = new string((from c in textbox.Text where !char.IsWhiteSpace(c) select c).ToArray());
+            textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) select c).ToArray());
         }
         private float? SanitizeFloat(TextBox textbox) {
             float value;
@@ -454,19 +537,175 @@ namespace SOLM {
                 return null;
             }
         }
-        private void tb_objectDryWeight_TextChanged(object sender, TextChangedEventArgs e) {
-            if (lv_objectList.SelectedIndex != -1) {
-                StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
-                float? value = SanitizeFloat(tb_objectDryWeight);
-                if (value.HasValue) {
-                    so.dryWeight = (float)value;
+        private int? SanitizeInt(TextBox textbox) {
+            int value;
+            if (int.TryParse(textbox.Text, out value)) {
+                textbox.Text = value.ToString();
+                textbox.Background = Brushes.White;
+                return value;
+            } else {
+                textbox.Background = Brushes.Red;
+                return null;
+            }
+        }
+        private void mi_newLibrary_Click(object sender, RoutedEventArgs e) {
+            sol = new SOL();
+            lv_objectList.ItemsSource = sol.objects;
+            Refresh();
+        }
+        private void mi_saveLibrary_Click(object sender, RoutedEventArgs e) {
+            XmlSerializer serializer = new XmlSerializer(typeof(SOL));
+            using (FileStream fs = new FileStream(Environment.CurrentDirectory + @"\Created Libraries\" + sol.fqName, FileMode.Create, FileAccess.ReadWrite)) {
+                serializer.Serialize(fs, sol);
+                fs.Close();
+            }
+        }
+        private void mi_loadLibrary_Click(object sender, RoutedEventArgs e) {
+            XmlSerializer serializer = new XmlSerializer(typeof(SOL));
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = Environment.CurrentDirectory + @"\Created Libraries";
+            if (dialog.ShowDialog() == true) {
+                if (File.Exists(dialog.FileName)) {
+                    using (FileStream fs = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read)) {
+                        sol = serializer.Deserialize(fs) as SOL;
+                        lv_objectList.ItemsSource = sol.objects;
+                        Refresh();
+                        fs.Close();
+                    }
                 }
             }
         }
         #endregion
 
-        private void b_loadModel_Click(object sender, RoutedEventArgs e) {
+        private void tb_property_name_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_propertiesList.SelectedItem != null) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                p.name = tb_property_name.Text;
+                Refresh();
+            }
+        }
+        private void cb_property_type_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_propertiesList.SelectedItem != null && cb_property_type.SelectedItem != null) {
+                tb_property_uBound.Visibility = Visibility.Collapsed;
+                tb_property_uBoundLabel.Visibility = Visibility.Collapsed;
+                tb_property_lBound.Visibility = Visibility.Collapsed;
+                tb_property_lBoundLabel.Visibility = Visibility.Collapsed;
+                tb_property_containerResource.Visibility = Visibility.Collapsed;
+                tb_property_containerResourceLabel.Visibility = Visibility.Collapsed;
+                tb_property_enumValuesLabel.Visibility = Visibility.Collapsed;
+                dg_property_enumValues.Visibility = Visibility.Collapsed;
+                switch ((string)cb_property_type.SelectedItem) {
+                    case "Container":
+                        (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new ContainerProperty();
+                        tb_property_uBound.Visibility = Visibility.Visible;
+                        tb_property_uBoundLabel.Visibility = Visibility.Visible;
+                        tb_property_containerResource.Visibility = Visibility.Visible;
+                        tb_property_containerResourceLabel.Visibility = Visibility.Visible;
+                        break;
+                    case "Integer":
+                        (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new IntegerProperty();
+                        tb_property_uBound.Visibility = Visibility.Visible;
+                        tb_property_uBoundLabel.Visibility = Visibility.Visible;
+                        tb_property_lBound.Visibility = Visibility.Visible;
+                        tb_property_lBoundLabel.Visibility = Visibility.Visible;
+                        break;
+                    case "Real":
+                        (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new RealProperty();
+                        tb_property_uBound.Visibility = Visibility.Visible;
+                        tb_property_uBoundLabel.Visibility = Visibility.Visible;
+                        tb_property_lBound.Visibility = Visibility.Visible;
+                        tb_property_lBoundLabel.Visibility = Visibility.Visible;
+                        break;
+                    case "Enum":
+                        (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new EnumProperty();
+                        tb_property_enumValuesLabel.Visibility = Visibility.Visible;
+                        dg_property_enumValues.Visibility = Visibility.Visible;
+                        break;
+                } 
+            } else {
+                tb_property_name.Text = "";
+                tb_operationDescription.Text = "";
+                cb_property_type.SelectedIndex = -1;
+                cb_property_visible.IsChecked = false;
+                tb_property_uBound.Visibility = Visibility.Collapsed;
+                tb_property_uBoundLabel.Visibility = Visibility.Collapsed;
+                tb_property_lBound.Visibility = Visibility.Collapsed;
+                tb_property_lBoundLabel.Visibility = Visibility.Collapsed;
+                tb_property_containerResource.Visibility = Visibility.Collapsed;
+                tb_property_containerResourceLabel.Visibility = Visibility.Collapsed;
+                tb_property_enumValuesLabel.Visibility = Visibility.Collapsed;
+                dg_property_enumValues.Visibility = Visibility.Collapsed;
+            }
+            Refresh();
+        }
+        private void tb_property_description_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_propertiesList.SelectedItem != null) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                p.description = tb_property_description.Text;
+                Refresh();
+            }
+        }
 
+        private void cb_property_visible_Checked(object sender, RoutedEventArgs e) {
+            if (lv_propertiesList.SelectedItem != null) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                p.visible = (bool)cb_property_visible.IsChecked;
+                Refresh();
+            }
+        }
+
+        private void tb_property_uBound_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_propertiesList.SelectedIndex != -1) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                float? fValue;
+                int? iValue;
+                if (p is ContainerProperty) {
+                    fValue = SanitizeFloat(tb_property_uBound);
+                    if (fValue.HasValue) {
+                        (p as ContainerProperty).uBound = (float)fValue;
+                    }
+                }
+                if (p is RealProperty) {
+                    fValue = SanitizeFloat(tb_property_uBound);
+                    if (fValue.HasValue) {
+                        (p as RealProperty).uBound = (float)fValue;
+                    }
+                }
+                if (p is IntegerProperty) {
+                    iValue = SanitizeInt(tb_property_uBound);
+                    if (iValue.HasValue) {
+                        (p as IntegerProperty).uBound = (int)iValue;
+                    }
+                }
+            }
+        }
+
+        private void tb_property_lBound_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_propertiesList.SelectedIndex != -1) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                float? fValue;
+                int? iValue;
+                if (p is RealProperty) {
+                    fValue = SanitizeFloat(tb_property_lBound);
+                    if (fValue.HasValue) {
+                        (p as RealProperty).lBound = (float)fValue;
+                    }
+                }
+                if (p is IntegerProperty) {
+                    iValue = SanitizeInt(tb_property_lBound);
+                    if (iValue.HasValue) {
+                        (p as IntegerProperty).lBound = (int)iValue;
+                    }
+                }
+            }
+        }
+
+        private void tb_property_containerResource_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_propertiesList.SelectedItem != null && lv_propertiesList.SelectedItem is ContainerProperty) {
+                ContainerProperty cp = lv_propertiesList.SelectedItem as ContainerProperty;
+                cp.resource = tb_property_containerResource.Text;
+                Refresh();
+            }
         }
     }
 

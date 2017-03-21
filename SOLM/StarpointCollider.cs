@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SOLM {
-    public abstract class StarpointCollider {
+    public class StarpointCollider {
         public float xOffset, yOffset, zOffset, xRot, yRot, zRot;
         public StarpointCollider() {
             xOffset = 0;

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SOLM {
-    class Effect {
+    public class Effect {
         public Effect() { }
         public Effect(Effect copySource) { }
     }

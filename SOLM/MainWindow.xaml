@@ -58,9 +58,9 @@
                         <TextBlock Text="Model file:" Margin="5" Height="20"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
-                        <TextBox Name="tb_objectName" Margin="5" TextChanged="tb_objectName_TextChanged" Height="20"/>
-                        <TextBox Name="tb_objectDryWeight" Margin="5" TextChanged="tb_objectDryWeight_TextChanged" Height="20"/>
-                        <TextBox Name="tb_objectModel" Margin="5" TextChanged="tb_objectModel_TextChanged" Height="20"/>
+                        <TextBox Name="tb_object_name" Margin="5" TextChanged="tb_object_name_TextChanged" Height="20"/>
+                        <TextBox Name="tb_object_dryWeight" Margin="5" TextChanged="tb_object_dryWeight_TextChanged" Height="20"/>
+                        <TextBox Name="tb_object_model" Margin="5" TextChanged="tb_object_model_TextChanged" Height="20"/>
                     </StackPanel>
                 </Grid>
 
@@ -79,8 +79,8 @@
                             <ListView Name="lv_operationsList" SelectionChanged="lv_operationsList_SelectionChanged" DockPanel.Dock="Top">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Name" Width="145" DisplayMemberBinding="{Binding name}" />
-                                        <GridViewColumn Header="Type"  DisplayMemberBinding="{Binding type}" />
+                                        <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding name}" />
+                                        <GridViewColumn Header="Type"  DisplayMemberBinding="{Binding action}" />
                                         <GridViewColumn Header="Trig."  DisplayMemberBinding="{Binding trigger}" />
                                         <GridView.ColumnHeaderContainerStyle>
                                             <Style TargetType="GridViewColumnHeader">
@@ -108,6 +108,7 @@
                                     <GridView>
                                         <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding name}" />
                                         <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding type}" />
+                                        <GridViewColumn Header="Visible?" Width="100" DisplayMemberBinding="{Binding visible}" />
                                         <GridView.ColumnHeaderContainerStyle>
                                             <Style TargetType="GridViewColumnHeader">
                                                 <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -161,7 +162,7 @@
                                     <StackPanel DockPanel.Dock="Top">
                                         <DockPanel>
                                             <TextBlock Text="Name:" Grid.Column="0" Margin="5" Height="22"/>
-                                            <TextBox Name="tb_operationName" Height="22" Margin="5"/>
+                                            <TextBox Name="tb_operationName" Height="22" Margin="5" TextChanged="tb_operationName_TextChanged"/>
                                         </DockPanel>
                                         <DockPanel>
                                             <TextBlock Text="Action Type:" Grid.Column="0" Margin="5" Height="22"/>
@@ -169,15 +170,15 @@
                                         </DockPanel>
                                         <DockPanel>
                                             <TextBlock Text="Trigger Type:" Grid.Column="0" Margin="5" Height="22"/>
-                                            <ComboBox Name="cb_operation_trigger" Height="22" Margin="5"/>
+                                            <ComboBox Name="cb_operation_trigger" Height="22" Margin="5" SelectionChanged="cb_operation_trigger_SelectionChanged"/>
                                         </DockPanel>
                                         <DockPanel>
                                             <TextBlock Name="tb_operationCooldownLabel" Text="Cooldown:" Grid.Column="0" Margin="5" Height="22"/>
-                                            <TextBox Name="tb_operationCooldown" Height="22" Margin="5"/>
+                                            <TextBox Name="tb_operationCooldown" Height="22" Margin="5" TextChanged="tb_operationCooldown_TextChanged"/>
                                         </DockPanel>
                                         <DockPanel>
                                             <TextBlock Name="tb_operationDescriptionLabel" Text="Description:" Grid.Column="0" Margin="5" MinHeight="22"/>
-                                            <TextBox Name="tb_operationDescription" MinHeight="22" Margin="5" TextWrapping="WrapWithOverflow"/>
+                                            <TextBox Name="tb_operationDescription" MinHeight="22" Margin="5" TextWrapping="WrapWithOverflow" TextChanged="tb_operationDescription_TextChanged"/>
                                         </DockPanel>
                                         <DockPanel>
                                             <TabControl Name="tc_operation" SelectionChanged="tc_operation_SelectionChanged">
@@ -392,31 +393,31 @@
                                 <StackPanel DockPanel.Dock="Top">
                                     <DockPanel >
                                         <TextBlock Text="Name:" Margin="5" Height="22"/>
-                                        <TextBox Name="tb_property_name" Margin="5" Height="22"/>
+                                        <TextBox Name="tb_property_name" Margin="5" Height="22" TextChanged="tb_property_name_TextChanged"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Property Type:" Margin="5" Height="22"/>
-                                        <ComboBox Name="cb_property_type" Margin="5" Height="22"/>
+                                        <ComboBox Name="cb_property_type" Margin="5" Height="22" SelectionChanged="cb_property_type_SelectionChanged"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Description:" Margin="5" Height="22"/>
-                                        <TextBox Name="tb_description_name" Margin="5" MinHeight="22" TextWrapping="Wrap"/>
+                                        <TextBox Name="tb_property_description" Margin="5" MinHeight="22" TextWrapping="Wrap" TextChanged="tb_property_description_TextChanged"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Visible:" Margin="5" Height="22"/>
-                                        <CheckBox Name="cb_property_visible" Margin="5" Height="22"/>
+                                        <CheckBox Name="cb_property_visible" Margin="5" Height="22" Checked="cb_property_visible_Checked" Unchecked="cb_property_visible_Checked"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Upper Bound:" Name="tb_property_uBoundLabel" Margin="5" Height="22"/>
-                                        <TextBox Name="tb_property_uBound" Margin="5" Height="22"/>
+                                        <TextBox Name="tb_property_uBound" Margin="5" Height="22" TextChanged="tb_property_uBound_TextChanged"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Lower Bound:" Name="tb_property_lBoundLabel" Margin="5" Height="22"/>
-                                        <TextBox Name="tb_property_lBound" Margin="5" Height="22"/>
+                                        <TextBox Name="tb_property_lBound" Margin="5" Height="22" TextChanged="tb_property_lBound_TextChanged"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Container Resource:" Name="tb_property_containerResourceLabel" Margin="5" Height="22"/>
-                                        <TextBox Name="tb_property_containerResource" Margin="5" Height="22"/>
+                                        <TextBox Name="tb_property_containerResource" Margin="5" Height="22" TextChanged="tb_property_containerResource_TextChanged"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Enum values:" Margin="5" Name="tb_property_enumValuesLabel" Height="22"/>
