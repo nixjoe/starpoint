@@ -58,6 +58,7 @@ namespace SOLM {
             uBound = copySource.uBound;
             resource = copySource.resource;
         }
+        public ContainerProperty(Property copySource) : base(copySource) { }
     }
     public class IntegerProperty : Property {
         public int? uBound, lBound;
@@ -73,6 +74,7 @@ namespace SOLM {
             lBound = copySource.lBound;
             uBound = copySource.uBound;
         }
+        public IntegerProperty(Property copySource) : base(copySource) { }
     }
     public class RealProperty : Property {
         public float? uBound, lBound;
@@ -88,6 +90,7 @@ namespace SOLM {
             lBound = copySource.lBound;
             uBound = copySource.uBound;
         }
+        public RealProperty(Property copySource) : base(copySource) { }
     }
     public class EnumProperty : Property {
         public List<EnumPropertyValue> enums;
@@ -99,6 +102,9 @@ namespace SOLM {
         }
         public EnumProperty(EnumProperty copySource) : base(copySource) {
             enums = copySource.enums;
+        }
+        public EnumProperty(Property copySource) : base(copySource) {
+            enums = new List<EnumPropertyValue>();
         }
     }
 }

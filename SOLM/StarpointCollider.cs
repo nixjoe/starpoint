@@ -3,10 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SOLM {
+    [XmlInclude(typeof(Cube)), XmlInclude(typeof(Sphere)), XmlInclude(typeof(Capsule)), XmlInclude(typeof(Cylinder))]
     public class StarpointCollider {
         public float xOffset, yOffset, zOffset, xRot, yRot, zRot;
+        public enum ColliderType { NULL, Cube, Sphere, Capsule, Cylinder };
+        public ColliderType type {
+            get {
+                if (this is Cube) {
+                    return ColliderType.Cube;
+                } else if (this is Sphere) {
+                    return ColliderType.Sphere;
+                } else if (this is Capsule) {
+                    return ColliderType.Capsule;
+                } else if (this is Cylinder) {
+                    return ColliderType.Cylinder;
+                } else {
+                    return ColliderType.NULL;
+                }
+            }
+        }
         public StarpointCollider() {
             xOffset = 0;
             yOffset = 0;
@@ -49,6 +67,7 @@ namespace SOLM {
             ySize = copySource.ySize;
             zSize = copySource.zSize;
         }
+        public Cube(StarpointCollider copySource) : base(copySource) { }
     }
     public class Sphere : StarpointCollider {
         public float radius;
@@ -61,6 +80,7 @@ namespace SOLM {
         public Sphere(Sphere copySource):base(copySource) {
             radius = copySource.radius;
         }
+        public Sphere(StarpointCollider copySource) : base(copySource) { }
     }
     public class Capsule : StarpointCollider {
         public float radius, ySize;
@@ -77,6 +97,7 @@ namespace SOLM {
             radius = copySource.radius;
             ySize = copySource.ySize;
         }
+        public Capsule(StarpointCollider copySource) : base(copySource) { }
     }
     public class Cylinder : StarpointCollider {
         public float radius, ySize;
@@ -92,5 +113,6 @@ namespace SOLM {
             radius = copySource.radius;
             ySize = copySource.ySize;
         }
+        public Cylinder(StarpointCollider copySource) : base(copySource) { }
     }
 }

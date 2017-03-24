@@ -3,15 +3,56 @@
   <objects>
     <StarpointObject>
       <properties>
-        <Property xsi:type="ContainerProperty">
+        <Property xsi:type="RealProperty">
           <description />
-          <name>New Property</name>
-          <visible>true</visible>
-          <uBound>1</uBound>
-          <resource>sdffsfd</resource>
+          <name>dsfd</name>
+          <visible>false</visible>
+          <uBound xsi:nil="true" />
+          <lBound xsi:nil="true" />
         </Property>
       </properties>
-      <operations />
+      <operations>
+        <Operation>
+          <requirements>
+            <Requirement xsi:type="ResourceRequirement">
+              <value>123</value>
+              <comparison>LessThanOrEquals</comparison>
+              <resource>sdfsdf</resource>
+            </Requirement>
+            <Requirement xsi:type="PropertyRequirement">
+              <value>0.333</value>
+              <comparison>LessThan</comparison>
+              <property>dsfd</property>
+            </Requirement>
+          </requirements>
+          <effects />
+          <name>New Operation</name>
+          <action>Discrete</action>
+          <trigger>Auto</trigger>
+          <cooldown>0</cooldown>
+          <description />
+        </Operation>
+        <Operation>
+          <requirements>
+            <Requirement xsi:type="ResourceRequirement">
+              <value>123</value>
+              <comparison>LessThanOrEquals</comparison>
+              <resource>sdfsdf</resource>
+            </Requirement>
+            <Requirement xsi:type="ResourceRequirement">
+              <value>0.333</value>
+              <comparison>LessThan</comparison>
+              <resource />
+            </Requirement>
+          </requirements>
+          <effects />
+          <name>New Operation</name>
+          <action>Discrete</action>
+          <trigger>Auto</trigger>
+          <cooldown>0</cooldown>
+          <description />
+        </Operation>
+      </operations>
       <colliders />
       <name>New Object</name>
       <dryWeight>0</dryWeight>

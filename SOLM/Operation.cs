@@ -30,7 +30,11 @@ namespace SOLM {
             description = copySource.description;
             requirements = new List<Requirement>();
             foreach (Requirement r in copySource.requirements) {
-                requirements.Add(new Requirement(r));
+                if (r is ResourceRequirement) {
+                    requirements.Add(new ResourceRequirement(r as ResourceRequirement));
+                } else {
+                    requirements.Add(new PropertyRequirement(r as PropertyRequirement));
+                }
             }
             effects = new List<Effect>();
             foreach (Effect e in copySource.effects) {
