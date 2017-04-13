@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace SOLM {
     public class StarpointObject {
         public string name { get; set; }
-        public float dryWeight { get; set; }
         public string model { get; set; }
         public List<Property> properties;
         public List<Operation> operations;
@@ -15,14 +14,16 @@ namespace SOLM {
         public StarpointObject() {
             name = "New Object";
             model = "Model Name.fbx";
-            dryWeight = 0;
             properties = new List<Property>();
+            properties.Add(new RealProperty("hp", true, "The hit points of this object.", 0f, 1, 1));
+            properties.Add(new RealProperty("armor", true, "The maximum damage this object can block before it takes damage to hit points.", 0f, null, 0));
+            properties.Add(new RealProperty("mass", true, "The mass of this object.", 0f, null, 0));
+            properties.Add(new RealProperty("max temperature", true, "The maximum temperature this object can reach before it is destroyed.", 0f, null, 0));
             operations = new List<Operation>();
             colliders = new List<StarpointCollider>();
         }
         public StarpointObject(StarpointObject copySource) {
             name = copySource.name;
-            dryWeight = copySource.dryWeight;
             model = copySource.model;
             properties = new List<Property>();
             foreach (Property p in copySource.properties) {

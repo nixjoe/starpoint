@@ -54,12 +54,10 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Name:" Margin="5" Height="20"/>
-                        <TextBlock Text="Dry Weight:" Margin="5" Height="20"/>
                         <TextBlock Text="Model file:" Margin="5" Height="20"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBox Name="tb_object_name" Margin="5" TextChanged="tb_object_name_TextChanged" Height="20"/>
-                        <TextBox Name="tb_object_dryWeight" Margin="5" TextChanged="tb_object_dryWeight_TextChanged" Height="20"/>
                         <TextBox Name="tb_object_model" Margin="5" TextChanged="tb_object_model_TextChanged" Height="20"/>
                     </StackPanel>
                 </Grid>
@@ -107,8 +105,9 @@
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Name" Width="115" DisplayMemberBinding="{Binding name}" />
-                                        <GridViewColumn Header="Type" Width="60" DisplayMemberBinding="{Binding type}" />
-                                        <GridViewColumn Header="Visible?" Width="100" DisplayMemberBinding="{Binding visible}" />
+                                        <GridViewColumn Header="Type" Width="50" DisplayMemberBinding="{Binding type}" />
+                                        <GridViewColumn Header="Vsbl" Width="30" DisplayMemberBinding="{Binding visible}" />
+                                        <GridViewColumn Header="Cntrl" Width="50" DisplayMemberBinding="{Binding control}" />
                                         <GridView.ColumnHeaderContainerStyle>
                                             <Style TargetType="GridViewColumnHeader">
                                                 <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -175,72 +174,68 @@
                                         <ComboBox Name="cb_operation_trigger" Height="22" Margin="5" SelectionChanged="cb_operation_trigger_SelectionChanged"/>
                                     </DockPanel>
                                     <DockPanel DockPanel.Dock="Top">
-                                        <TextBlock Name="tb_operationCooldownLabel" Text="Cooldown:" Grid.Column="0" Margin="5" Height="22"/>
+                                        <TextBlock Name="tb_operationCooldownLabel" Text="Cooldown*:" Grid.Column="0" Margin="5" Height="22"/>
                                         <TextBox Name="tb_operationCooldown" Height="22" Margin="5" TextChanged="tb_operationCooldown_TextChanged"/>
                                     </DockPanel>
                                     <DockPanel DockPanel.Dock="Top">
                                         <TextBlock Name="tb_operationDescriptionLabel" Text="Description:" Grid.Column="0" Margin="5" MinHeight="22"/>
                                         <TextBox Name="tb_operationDescription" MinHeight="22" Margin="5" TextWrapping="WrapWithOverflow" TextChanged="tb_operationDescription_TextChanged"/>
                                     </DockPanel>
-
-                                    <!--<ScrollViewer DockPanel.Dock="Top" VerticalAlignment="Stretch">-->
                                     <TabControl Name="tc_operation" SelectionChanged="tc_operation_SelectionChanged" DockPanel.Dock="Top">
-                                            <TabItem Name="ti_requirementsList">
-                                                <TabItem.Header>
-                                                    <TextBlock Text="Requirements" FontWeight="Bold"/>
-                                                </TabItem.Header>
-                                                <DockPanel>
-                                                    <Menu DockPanel.Dock="Bottom" Height="20">
-                                                        <MenuItem Name="mi_requirements_new" Click="mi_requirements_new_Click" Header="New"/>
-                                                        <MenuItem Name="mi_requirements_copy" Click="mi_requirements_copy_Click" Header="Copy"/>
-                                                        <MenuItem Name="mi_requirements_delete" Click="mi_requirements_delete_Click" Header="Delete"/>
-                                                        <MenuItem Name="mi_requirements_sort" Click="mi_requirements_sort_Click" Header="Sort A-Z"/>
-                                                    </Menu>
-                                                    <ListView Name="lv_requirementList" SelectionChanged="lv_requirementList_SelectionChanged" DockPanel.Dock="Top" FontWeight="Regular" FontSize="12" MinHeight="200">
-                                                        <ListView.View>
-                                                            <GridView>
-                                                                <GridViewColumn Header="Type" Width="80" DisplayMemberBinding="{Binding type}" />
-                                                                <GridViewColumn Header="var" Width="80" DisplayMemberBinding="{Binding variable}" />
-                                                                <GridViewColumn Header="cmprsn" Width="80" DisplayMemberBinding="{Binding comparison}" />
-                                                                <GridViewColumn Header="val" Width="80" DisplayMemberBinding="{Binding value}" />
-                                                                <GridView.ColumnHeaderContainerStyle>
-                                                                    <Style TargetType="GridViewColumnHeader">
-                                                                        <Setter Property="HorizontalContentAlignment" Value="Left" />
-                                                                    </Style>
-                                                                </GridView.ColumnHeaderContainerStyle>
-                                                            </GridView>
-                                                        </ListView.View>
-                                                    </ListView>
-                                                </DockPanel>
-                                            </TabItem>
-                                            <TabItem Name="ti_effectsList">
-                                                <TabItem.Header>
-                                                    <TextBlock Text="Effects" FontWeight="Bold"/>
-                                                </TabItem.Header>
-                                                <DockPanel>
-                                                    <Menu DockPanel.Dock="Bottom" Height="20">
-                                                        <MenuItem Name="mi_effects_new" Click="mi_effects_new_Click" Header="New"/>
-                                                        <MenuItem Name="mi_effects_copy" Click="mi_effects_copy_Click" Header="Copy"/>
-                                                        <MenuItem Name="mi_effects_delete" Click="mi_effects_delete_Click" Header="Delete"/>
-                                                        <MenuItem Name="mi_effects_sort" Click="mi_effects_sort_Click" Header="Sort A-Z"/>
-                                                    </Menu>
-                                                    <ListView Name="lv_effectList" SelectionChanged="lv_effectList_SelectionChanged" DockPanel.Dock="Top" FontWeight="Regular" FontSize="12">
-                                                        <ListView.View>
-                                                            <GridView>
-                                                                <GridViewColumn Header="Effects" Width="210" DisplayMemberBinding="{Binding type}" />
-                                                                <GridView.ColumnHeaderContainerStyle>
-                                                                    <Style TargetType="GridViewColumnHeader">
-                                                                        <Setter Property="HorizontalContentAlignment" Value="Left" />
-                                                                    </Style>
-                                                                </GridView.ColumnHeaderContainerStyle>
-                                                            </GridView>
-                                                        </ListView.View>
-                                                    </ListView>
-                                                </DockPanel>
-                                            </TabItem>
-                                        </TabControl>
-                                    <!--</ScrollViewer>-->
-
+                                        <TabItem Name="ti_requirementsList">
+                                            <TabItem.Header>
+                                                <TextBlock Text="Requirements" FontWeight="Bold"/>
+                                            </TabItem.Header>
+                                            <DockPanel>
+                                                <Menu DockPanel.Dock="Bottom" Height="20">
+                                                    <MenuItem Name="mi_requirements_new" Click="mi_requirements_new_Click" Header="New"/>
+                                                    <MenuItem Name="mi_requirements_copy" Click="mi_requirements_copy_Click" Header="Copy"/>
+                                                    <MenuItem Name="mi_requirements_delete" Click="mi_requirements_delete_Click" Header="Delete"/>
+                                                    <MenuItem Name="mi_requirements_sort" Click="mi_requirements_sort_Click" Header="Sort A-Z"/>
+                                                </Menu>
+                                                <ListView Name="lv_requirementList" SelectionChanged="lv_requirementList_SelectionChanged" DockPanel.Dock="Top" FontWeight="Regular" FontSize="12" MinHeight="200">
+                                                    <ListView.View>
+                                                        <GridView>
+                                                            <GridViewColumn Header="Type" Width="80" DisplayMemberBinding="{Binding type}" />
+                                                            <GridViewColumn Header="var" Width="80" DisplayMemberBinding="{Binding variable}" />
+                                                            <GridViewColumn Header="cmprsn" Width="80" DisplayMemberBinding="{Binding comparison}" />
+                                                            <GridViewColumn Header="val" Width="80" DisplayMemberBinding="{Binding value}" />
+                                                            <GridView.ColumnHeaderContainerStyle>
+                                                                <Style TargetType="GridViewColumnHeader">
+                                                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                                                </Style>
+                                                            </GridView.ColumnHeaderContainerStyle>
+                                                        </GridView>
+                                                    </ListView.View>
+                                                </ListView>
+                                            </DockPanel>
+                                        </TabItem>
+                                        <TabItem Name="ti_effectsList">
+                                            <TabItem.Header>
+                                                <TextBlock Text="Effects" FontWeight="Bold"/>
+                                            </TabItem.Header>
+                                            <DockPanel>
+                                                <Menu DockPanel.Dock="Bottom" Height="20">
+                                                    <MenuItem Name="mi_effects_new" Click="mi_effects_new_Click" Header="New"/>
+                                                    <MenuItem Name="mi_effects_copy" Click="mi_effects_copy_Click" Header="Copy"/>
+                                                    <MenuItem Name="mi_effects_delete" Click="mi_effects_delete_Click" Header="Delete"/>
+                                                    <MenuItem Name="mi_effects_sort" Click="mi_effects_sort_Click" Header="Sort A-Z"/>
+                                                </Menu>
+                                                <ListView Name="lv_effectList" SelectionChanged="lv_effectList_SelectionChanged" DockPanel.Dock="Top" FontWeight="Regular" FontSize="12">
+                                                    <ListView.View>
+                                                        <GridView>
+                                                            <GridViewColumn Header="Effects" Width="210" DisplayMemberBinding="{Binding type}" />
+                                                            <GridView.ColumnHeaderContainerStyle>
+                                                                <Style TargetType="GridViewColumnHeader">
+                                                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                                                </Style>
+                                                            </GridView.ColumnHeaderContainerStyle>
+                                                        </GridView>
+                                                    </ListView.View>
+                                                </ListView>
+                                            </DockPanel>
+                                        </TabItem>
+                                    </TabControl>
                                 </DockPanel>
                             <TabControl Name="tc_reqEff" SelectionChanged="tc_reqEff_SelectionChanged" Grid.Column="1">
                                 <TabItem>
@@ -286,103 +281,101 @@
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Property:" Name="tb_effect_propertyLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <ComboBox Name="cb_effect_property" Height="22" Margin="5"/>
+                                                <ComboBox Name="cb_effect_property" Height="22" Margin="5" SelectionChanged="cb_effect_property_SelectionChanged" DropDownOpened="cb_effect_property_DropDownOpened"/>
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Assignment Type:" Name="tb_effect_assignmentLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <ComboBox Name="cb_effect_assignment" Height="22" Margin="5"/>
+                                                <ComboBox Name="cb_effect_assignment" Height="22" Margin="5" SelectionChanged="cb_effect_assignment_SelectionChanged"/>
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Resource:" Name="tb_effect_resourceLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_resource" MinHeight="22" Margin="5"/>
+                                                <TextBox Name="tb_effect_resource" MinHeight="22" Margin="5" TextChanged="tb_effect_resource_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Phys. Type:" Name="tb_effect_physicalTypeLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <ComboBox Name="cb_effect_physicalType" MinHeight="22" Margin="5"/>
+                                                <ComboBox Name="cb_effect_physicalType" MinHeight="22" Margin="5" SelectionChanged="cb_effect_physicalType_SelectionChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Value:" Name="tb_effect_valueLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_value" MinHeight="22" Margin="5" TextWrapping="WrapWithOverflow"/>
+                                                <TextBlock Text="Value*:" Name="tb_effect_valueLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_value" MinHeight="22" Margin="5" TextWrapping="WrapWithOverflow" TextChanged="tb_effect_value_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="X Value:" Name="tb_effect_xValueLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_xValue" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="X Value*:" Name="tb_effect_xValueLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_xValue" MinHeight="22" Margin="5" TextChanged="tb_effect_xValue_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Y Value:" Name="tb_effect_yValueLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_yValue" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Y Value*:" Name="tb_effect_yValueLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_yValue" MinHeight="22" Margin="5" TextChanged="tb_effect_yValue_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Z Value:" Name="tb_effect_zValueLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_zValue" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Z Value*:" Name="tb_effect_zValueLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_zValue" MinHeight="22" Margin="5" TextChanged="tb_effect_zValue_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Audio Clip:" Name="tb_effect_audioClipLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_audioClip" MinHeight="22" Margin="5" />
+                                                <TextBox Name="tb_effect_audioClip" MinHeight="22" Margin="5" TextChanged="tb_effect_audioClip_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Audio Mode:" Name="tb_effect_audioModeLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <ComboBox Name="cb_effect_audioMode" MinHeight="22" Margin="5" />
+                                                <ComboBox Name="cb_effect_audioMode" MinHeight="22" Margin="5" SelectionChanged="cb_effect_audioMode_SelectionChanged"/>
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Visual Effect:" Name="tb_effect_visualLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_visual" MinHeight="22" Margin="5" />
+                                                <TextBox Name="tb_effect_visual" MinHeight="22" Margin="5" TextChanged="tb_effect_visual_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
                                                 <TextBlock Text="Object:" Name="tb_effect_objectLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_object" MinHeight="22" Margin="5" />
+                                                <TextBox Name="tb_effect_object" MinHeight="22" Margin="5" TextChanged="tb_effect_object_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="X position:" Name="tb_effect_xPosLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_xPos" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="X position*:" Name="tb_effect_xPosLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_xPos" MinHeight="22" Margin="5" TextChanged="tb_effect_xPos_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Y position:" Name="tb_effect_yPosLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_yPos" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Y position*:" Name="tb_effect_yPosLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_yPos" MinHeight="22" Margin="5" TextChanged="tb_effect_yPos_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Z position:" Name="tb_effect_zPosLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_zPos" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Z position*:" Name="tb_effect_zPosLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_zPos" MinHeight="22" Margin="5" TextChanged="tb_effect_zPos_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="X rotation:" Name="tb_effect_xRotLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_xRot" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="X rotation*:" Name="tb_effect_xRotLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_xRot" MinHeight="22" Margin="5" TextChanged="tb_effect_xRot_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Y rotation:" Name="tb_effect_yRotLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_yRot" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Y rotation*:" Name="tb_effect_yRotLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_yRot" MinHeight="22" Margin="5" TextChanged="tb_effect_yRot_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Z rotation:" Name="tb_effect_zRotLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_zRot" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Z rotation*:" Name="tb_effect_zRotLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_zRot" MinHeight="22" Margin="5" TextChanged="tb_effect_zRot_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="X velocity:" Name="tb_effect_xVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_xVelocity" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="X velocity*:" Name="tb_effect_xVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_xVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_xVelocity_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Y velocity:" Name="tb_effect_yVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_yVelocity" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Y velocity*:" Name="tb_effect_yVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_yVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_yVelocity_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Z velocity:" Name="tb_effect_zVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_zVelocity" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Z velocity*:" Name="tb_effect_zVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_zVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_zVelocity_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="X angular velocity:" Name="tb_effect_xAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_xAngVelocity" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="X angular velocity*:" Name="tb_effect_xAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_xAngVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_xAngVelocity_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Y angular velocity:" Name="tb_effect_yAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_yAngVelocity" MinHeight="22" Margin="5" />
+                                                <TextBlock Text="Y angular velocity*:" Name="tb_effect_yAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_yAngVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_yAngVelocity_TextChanged"/>
                                             </DockPanel>
-                                            <DockPanel>
-                                                <TextBlock Text="Z angular velocity:" Name="tb_effect_zAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                <TextBox Name="tb_effect_zAngVelocity" MinHeight="22" Margin="5" />
-                                            </DockPanel>
-                                            <StackPanel Grid.Column="1">
+                                                <DockPanel>
+                                                    <TextBlock Text="Z angular velocity*:" Name="tb_effect_zAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                    <TextBox Name="tb_effect_zAngVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_zAngVelocity_TextChanged"/>
+                                                </DockPanel>
                                             </StackPanel>
-                                        </StackPanel>
                                     </ScrollViewer>
                                 </TabItem>
                             </TabControl>
@@ -411,6 +404,14 @@
                                     <DockPanel >
                                         <TextBlock Text="Visible:" Margin="5" Height="22"/>
                                         <CheckBox Name="cb_property_visible" Margin="5" Height="22" Checked="cb_property_visible_Checked" Unchecked="cb_property_visible_Checked"/>
+                                    </DockPanel>
+                                    <DockPanel >
+                                        <TextBlock Text="Control:" Margin="5" Height="22"/>
+                                        <CheckBox Name="cb_property_control" Margin="5" Height="22" Checked="cb_property_control_Checked" Unchecked="cb_property_visible_Checked"/>
+                                    </DockPanel>
+                                    <DockPanel >
+                                        <TextBlock Text="Default Value:" Name="tb_property_defaultLabel" Margin="5" Height="22"/>
+                                        <TextBox Name="tb_property_default" Margin="5" Height="22" TextChanged="tb_property_default_TextChanged"/>
                                     </DockPanel>
                                     <DockPanel >
                                         <TextBlock Text="Upper Bound:" Name="tb_property_uBoundLabel" Margin="5" Height="22"/>

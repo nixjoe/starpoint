@@ -9,7 +9,7 @@ namespace SOLM {
         public string name { get; set; }
         public string action { get; set; }
         public string trigger { get; set; }
-        public float cooldown { get; set; }
+        public string cooldown { get; set; }
         public string description { get; set; }
         public List<Requirement> requirements;
         public List<Effect> effects;
@@ -17,7 +17,7 @@ namespace SOLM {
             name = "New Operation";
             action = "Discrete";
             trigger = "Auto";
-            cooldown = 0;
+            cooldown = "0";
             description = "";
             requirements = new List<Requirement>();
             effects = new List<Effect>();

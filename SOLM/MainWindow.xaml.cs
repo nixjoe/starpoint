@@ -12,19 +12,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-//using System.Windows.Shapes;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 using HelixToolkit.Wpf;
 
 namespace SOLM {
-
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window {
         SOL sol;
-        private bool propertyTypeChange, colliderTypeChange, requirementTypeChange;
+        private bool propertyTypeChange, colliderTypeChange, requirementTypeChange, effectTypeChange;
         private readonly string CREATED_LIBRARY_PATH = Environment.CurrentDirectory + @"\Created Libraries";
         private readonly string CONVERTED_MODELS_PATH = Environment.CurrentDirectory + @"\Converted Models";
         public MainWindow() {
@@ -32,6 +27,7 @@ namespace SOLM {
             propertyTypeChange = true;
             colliderTypeChange = true;
             requirementTypeChange = true;
+            effectTypeChange = true;
             cb_operation_actionType.ItemsSource = new List<string>(new string[] { "Discrete", "Continuous" });
             cb_operation_trigger.ItemsSource = new List<string>(new string[] { "Auto", "Semiauto", "Passive" });
             cb_effect_type.ItemsSource = new List<string>(new string[] { "Property", "Resource", "Physical", "Audio", "Visual", "Object" });
@@ -39,8 +35,8 @@ namespace SOLM {
             cb_property_type.ItemsSource = new List<string>(new string[] { "Container", "Integer", "Real", "Enum" });
             cb_requirement_comparison.ItemsSource = new List<string>(new string[] { "=", "<", ">", "<=", ">=", "!=" });
             cb_requirement_type.ItemsSource = new List<string>(new string[] { "Resource", "Property" });
-            cb_effect_audioMode.ItemsSource = new List<string>(new string[] { "Play Once", "Loop" });
-            cb_effect_physicalType.ItemsSource = new List<string>(new string[] { "AbsoluteForce", "RelativeForce", "Torque" });
+            cb_effect_audioMode.ItemsSource = new List<string>(new string[] { "PlayOnce", "Loop" });
+            cb_effect_physicalType.ItemsSource = new List<string>(new string[] { "Force", "Torque" });
             cb_collider_shape.ItemsSource = new List<string>(new string[] { "Cube", "Sphere", "Capsule", "Cylinder" });
             Directory.CreateDirectory(CREATED_LIBRARY_PATH);
             Directory.CreateDirectory(CONVERTED_MODELS_PATH);
@@ -56,7 +52,61 @@ namespace SOLM {
 
         }
         private void lv_effectList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-
+            if (lv_effectList.SelectedItem != null) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                requirementTypeChange = false;
+                if (ef is PropertyEffect) {
+                    cb_effect_type.SelectedIndex = (cb_effect_type.ItemsSource as List<string>).IndexOf("Property");
+                    cb_effect_property.ItemsSource = (from p in (lv_objectList.SelectedItem as StarpointObject).properties select p.name).ToList();
+                    cb_effect_property.SelectedIndex = (cb_effect_property.ItemsSource as List<string>).IndexOf((ef as PropertyEffect).property);
+                    cb_effect_assignment.SelectedIndex = (cb_effect_assignment.ItemsSource as List<string>).IndexOf((ef as PropertyEffect).assignmentType.ToString());
+                    tb_effect_value.Text = (ef as PropertyEffect).value;
+                } else if (ef is ResourceEffect) {
+                    cb_effect_type.SelectedIndex = (cb_effect_type.ItemsSource as List<string>).IndexOf("Resource");
+                    cb_effect_property.ItemsSource = (from p in (lv_objectList.SelectedItem as StarpointObject).properties select p.name).ToList();
+                    cb_effect_property.SelectedIndex = (cb_effect_property.ItemsSource as List<string>).IndexOf((ef as ResourceEffect).resource);
+                    cb_effect_assignment.SelectedIndex = (cb_effect_assignment.ItemsSource as List<string>).IndexOf((ef as ResourceEffect).assignmentType.ToString());
+                    tb_effect_value.Text = (ef as ResourceEffect).value;
+                } else if (ef is PhysicalEffect) {
+                    cb_effect_type.SelectedIndex = (cb_effect_type.ItemsSource as List<string>).IndexOf("Physical");
+                    cb_effect_physicalType.SelectedIndex = (cb_effect_physicalType.ItemsSource as List<string>).IndexOf((ef as PhysicalEffect).physicalType.ToString());
+                    tb_effect_xPos.Text = (ef as PhysicalEffect).xPos.ToString();
+                    tb_effect_yPos.Text = (ef as PhysicalEffect).yPos.ToString();
+                    tb_effect_zPos.Text = (ef as PhysicalEffect).zPos.ToString();
+                    tb_effect_xValue.Text = (ef as PhysicalEffect).xValue.ToString();
+                    tb_effect_yValue.Text = (ef as PhysicalEffect).yValue.ToString();
+                    tb_effect_zValue.Text = (ef as PhysicalEffect).zValue.ToString();
+                } else if (ef is AudioEffect) {
+                    cb_effect_type.SelectedIndex = (cb_effect_type.ItemsSource as List<string>).IndexOf("Audio");
+                    cb_effect_audioMode.SelectedIndex = (cb_effect_audioMode.ItemsSource as List<string>).IndexOf((ef as AudioEffect).audioMode.ToString());
+                    tb_effect_audioClip.Text = (ef as AudioEffect).audioClip;
+                } else if (ef is VisualEffect) {
+                    cb_effect_type.SelectedIndex = (cb_effect_type.ItemsSource as List<string>).IndexOf("Visual");
+                    tb_effect_xPos.Text = (ef as VisualEffect).xPos.ToString();
+                    tb_effect_yPos.Text = (ef as VisualEffect).yPos.ToString();
+                    tb_effect_zPos.Text = (ef as VisualEffect).zPos.ToString();
+                    tb_effect_xRot.Text = (ef as VisualEffect).xRot.ToString();
+                    tb_effect_yRot.Text = (ef as VisualEffect).yRot.ToString();
+                    tb_effect_zRot.Text = (ef as VisualEffect).zRot.ToString();
+                    tb_effect_visual.Text = (ef as VisualEffect).visual;
+                } else if (ef is ObjectEffect) {
+                    cb_effect_type.SelectedIndex = (cb_effect_type.ItemsSource as List<string>).IndexOf("Object");
+                    tb_effect_xPos.Text = (ef as ObjectEffect).xPos.ToString();
+                    tb_effect_yPos.Text = (ef as ObjectEffect).yPos.ToString();
+                    tb_effect_zPos.Text = (ef as ObjectEffect).zPos.ToString();
+                    tb_effect_xRot.Text = (ef as ObjectEffect).xRot.ToString();
+                    tb_effect_yRot.Text = (ef as ObjectEffect).yRot.ToString();
+                    tb_effect_zRot.Text = (ef as ObjectEffect).zRot.ToString();
+                    tb_effect_xVelocity.Text = (ef as ObjectEffect).xVel.ToString();
+                    tb_effect_yVelocity.Text = (ef as ObjectEffect).yVel.ToString();
+                    tb_effect_zVelocity.Text = (ef as ObjectEffect).zVel.ToString();
+                    tb_effect_xAngVelocity.Text = (ef as ObjectEffect).xAng.ToString();
+                    tb_effect_yAngVelocity.Text = (ef as ObjectEffect).yAng.ToString();
+                    tb_effect_zAngVelocity.Text = (ef as ObjectEffect).zAng.ToString();
+                    tb_effect_object.Text = (ef as ObjectEffect).obj;
+                }
+                requirementTypeChange = true;
+            }
         }
         private void mi_effects_sort_Click(object sender, RoutedEventArgs e) {
 
@@ -110,7 +160,7 @@ namespace SOLM {
             } else if (listView == lv_requirementList && listView.ItemsSource != null) {
                 (listView.ItemsSource as List<Requirement>).Add(new ResourceRequirement());
             } else if (listView == lv_effectList && listView.ItemsSource != null) {
-                (listView.ItemsSource as List<Effect>).Add(new Effect());
+                (listView.ItemsSource as List<Effect>).Add(new PropertyEffect());
             } else if (listView == lv_collidersList && listView.ItemsSource != null) {
                 (listView.ItemsSource as List<StarpointCollider>).Add(new Cube());
             }
@@ -140,7 +190,20 @@ namespace SOLM {
                     (lv_requirementList.ItemsSource as List<Requirement>).Add(new PropertyRequirement(lv_requirementList.SelectedItem as PropertyRequirement));
                 }
             } else if (listView == lv_effectList && lv_effectList.SelectedIndex != -1) {
-                (lv_effectList.ItemsSource as List<Effect>).Add(new Effect(lv_effectList.SelectedItem as Effect));
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is PropertyEffect) {
+                    (lv_effectList.ItemsSource as List<Effect>).Add(new PropertyEffect(lv_effectList.SelectedItem as PropertyEffect));
+                } else if (ef is ResourceEffect) {
+                    (lv_effectList.ItemsSource as List<Effect>).Add(new ResourceEffect(lv_effectList.SelectedItem as ResourceEffect));
+                } else if (ef is PhysicalEffect) {
+                    (lv_effectList.ItemsSource as List<Effect>).Add(new PhysicalEffect(lv_effectList.SelectedItem as PhysicalEffect));
+                } else if (ef is AudioEffect) {
+                    (lv_effectList.ItemsSource as List<Effect>).Add(new AudioEffect(lv_effectList.SelectedItem as AudioEffect));
+                } else if (ef is VisualEffect) {
+                    (lv_effectList.ItemsSource as List<Effect>).Add(new VisualEffect(lv_effectList.SelectedItem as VisualEffect));
+                } else if (ef is ObjectEffect) {
+                    (lv_effectList.ItemsSource as List<Effect>).Add(new ObjectEffect(lv_effectList.SelectedItem as ObjectEffect));
+                }
             } else if (listView == lv_collidersList && lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider sc = lv_collidersList.SelectedItem as StarpointCollider;
                 if (sc is Cube) {
@@ -186,16 +249,20 @@ namespace SOLM {
             CopyItem(lv_collidersList);
         }
         private void mi_colliders_delete_Click(object sender, RoutedEventArgs e) {
-            DeleteItem(lv_collidersList);
+                DeleteItem(lv_collidersList);
         }
         private void mi_properties_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_propertiesList);
         }
         private void mi_properties_copy_Click(object sender, RoutedEventArgs e) {
-            CopyItem(lv_propertiesList);
+            if (!(new string[] { "hp", "armor", "max temperature", "mass" }.Contains((lv_propertiesList.SelectedItem as Property).name))) {
+                CopyItem(lv_propertiesList);
+            }
         }
         private void mi_properties_delete_Click(object sender, RoutedEventArgs e) {
-            DeleteItem(lv_propertiesList);
+            if (!(new string[] { "hp", "armor", "max temperature", "mass" }.Contains((lv_propertiesList.SelectedItem as Property).name))) {
+                DeleteItem(lv_propertiesList);
+            }
         }
         private void cb_collider_shape_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             tb_collider_radius.Visibility = Visibility.Collapsed;
@@ -303,72 +370,106 @@ namespace SOLM {
             tb_effect_xAngVelocity.Visibility = Visibility.Collapsed;
             tb_effect_yAngVelocity.Visibility = Visibility.Collapsed;
             tb_effect_zAngVelocity.Visibility = Visibility.Collapsed;
-            switch ((string)cb_effect_type.SelectedItem) {
-                case "Property":
-                    tb_effect_propertyLabel.Visibility = Visibility.Visible;
-                    tb_effect_assignmentLabel.Visibility = Visibility.Visible;
-                    cb_effect_property.Visibility = Visibility.Visible;
-                    cb_effect_assignment.Visibility = Visibility.Visible;
-                    tb_effect_valueLabel.Visibility = Visibility.Visible;
-                    tb_effect_value.Visibility = Visibility.Visible;
-                    break;
-                case "Resource":
-                    tb_effect_resourceLabel.Visibility = Visibility.Visible;
-                    tb_effect_resource.Visibility = Visibility.Visible;
-                    tb_effect_assignmentLabel.Visibility = Visibility.Visible;
-                    cb_effect_assignment.Visibility = Visibility.Visible;
-                    tb_effect_valueLabel.Visibility = Visibility.Visible;
-                    tb_effect_value.Visibility = Visibility.Visible;
-                    break;
-                case "Physical":
-                    tb_effect_physicalTypeLabel.Visibility = Visibility.Visible;
-                    cb_effect_physicalType.Visibility = Visibility.Visible;
-                    tb_effect_xValueLabel.Visibility = Visibility.Visible;
-                    tb_effect_yValueLabel.Visibility = Visibility.Visible;
-                    tb_effect_zValueLabel.Visibility = Visibility.Visible;
-                    tb_effect_xValue.Visibility = Visibility.Visible;
-                    tb_effect_yValue.Visibility = Visibility.Visible;
-                    tb_effect_zValue.Visibility = Visibility.Visible;
-                    break;
-                case "Audio":
-                    tb_effect_audioClipLabel.Visibility = Visibility.Visible;
-                    tb_effect_audioModeLabel.Visibility = Visibility.Visible;
-                    tb_effect_audioClip.Visibility = Visibility.Visible;
-                    cb_effect_audioMode.Visibility = Visibility.Visible;
-                    break;
-                case "Visual":
-                    tb_effect_visualLabel.Visibility = Visibility.Visible;
-                    tb_effect_visual.Visibility = Visibility.Visible;
-                    tb_effect_xPosLabel.Visibility = Visibility.Visible;
-                    tb_effect_yPosLabel.Visibility = Visibility.Visible;
-                    tb_effect_zPosLabel.Visibility = Visibility.Visible;
-                    tb_effect_xPos.Visibility = Visibility.Visible;
-                    tb_effect_yPos.Visibility = Visibility.Visible;
-                    tb_effect_zPos.Visibility = Visibility.Visible;
-                    break;
-                case "Object":
-                    tb_effect_object.Visibility = Visibility.Visible;
-                    tb_effect_objectLabel.Visibility = Visibility.Visible;
-                    tb_effect_xRotLabel.Visibility = Visibility.Visible;
-                    tb_effect_yRotLabel.Visibility = Visibility.Visible;
-                    tb_effect_zRotLabel.Visibility = Visibility.Visible;
-                    tb_effect_xRot.Visibility = Visibility.Visible;
-                    tb_effect_yRot.Visibility = Visibility.Visible;
-                    tb_effect_zRot.Visibility = Visibility.Visible;
-                    tb_effect_xVelocityLabel.Visibility = Visibility.Visible;
-                    tb_effect_yVelocityLabel.Visibility = Visibility.Visible;
-                    tb_effect_zVelocityLabel.Visibility = Visibility.Visible;
-                    tb_effect_xVelocity.Visibility = Visibility.Visible;
-                    tb_effect_yVelocity.Visibility = Visibility.Visible;
-                    tb_effect_zVelocity.Visibility = Visibility.Visible;
-                    tb_effect_xAngVelocityLabel.Visibility = Visibility.Visible;
-                    tb_effect_yAngVelocityLabel.Visibility = Visibility.Visible;
-                    tb_effect_zAngVelocityLabel.Visibility = Visibility.Visible;
-                    tb_effect_xAngVelocity.Visibility = Visibility.Visible;
-                    tb_effect_yAngVelocity.Visibility = Visibility.Visible;
-                    tb_effect_zAngVelocity.Visibility = Visibility.Visible;
-                    break;
+            if (lv_effectList.SelectedItem != null && cb_effect_type.SelectedItem != null) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                switch ((string)cb_effect_type.SelectedItem) {
+                    case "Property":
+                        if (effectTypeChange) {
+                            (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new PropertyEffect(ef);
+                        }
+                        tb_effect_propertyLabel.Visibility = Visibility.Visible;
+                        tb_effect_assignmentLabel.Visibility = Visibility.Visible;
+                        cb_effect_property.Visibility = Visibility.Visible;
+                        cb_effect_assignment.Visibility = Visibility.Visible;
+                        tb_effect_valueLabel.Visibility = Visibility.Visible;
+                        tb_effect_value.Visibility = Visibility.Visible;
+                        break;
+                    case "Resource":
+                        if (effectTypeChange) {
+                            (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new ResourceEffect(ef);
+                        }
+                        tb_effect_resourceLabel.Visibility = Visibility.Visible;
+                        tb_effect_resource.Visibility = Visibility.Visible;
+                        tb_effect_assignmentLabel.Visibility = Visibility.Visible;
+                        cb_effect_assignment.Visibility = Visibility.Visible;
+                        tb_effect_valueLabel.Visibility = Visibility.Visible;
+                        tb_effect_value.Visibility = Visibility.Visible;
+                        break;
+                    case "Physical":
+                        if (effectTypeChange) {
+                            (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new PhysicalEffect(ef);
+                        }
+                        tb_effect_physicalTypeLabel.Visibility = Visibility.Visible;
+                        cb_effect_physicalType.Visibility = Visibility.Visible;
+                        tb_effect_xValueLabel.Visibility = Visibility.Visible;
+                        tb_effect_yValueLabel.Visibility = Visibility.Visible;
+                        tb_effect_zValueLabel.Visibility = Visibility.Visible;
+                        tb_effect_xValue.Visibility = Visibility.Visible;
+                        tb_effect_yValue.Visibility = Visibility.Visible;
+                        tb_effect_zValue.Visibility = Visibility.Visible;
+                        tb_effect_xPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_yPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_zPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_xPos.Visibility = Visibility.Visible;
+                        tb_effect_yPos.Visibility = Visibility.Visible;
+                        tb_effect_zPos.Visibility = Visibility.Visible;
+                        break;
+                    case "Audio":
+                        if (effectTypeChange) {
+                            (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new AudioEffect(ef);
+                        }
+                        tb_effect_audioClipLabel.Visibility = Visibility.Visible;
+                        tb_effect_audioModeLabel.Visibility = Visibility.Visible;
+                        tb_effect_audioClip.Visibility = Visibility.Visible;
+                        cb_effect_audioMode.Visibility = Visibility.Visible;
+                        break;
+                    case "Visual":
+                        if (effectTypeChange) {
+                            (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new VisualEffect(ef);
+                        }
+                        tb_effect_visualLabel.Visibility = Visibility.Visible;
+                        tb_effect_visual.Visibility = Visibility.Visible;
+                        tb_effect_xPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_yPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_zPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_xPos.Visibility = Visibility.Visible;
+                        tb_effect_yPos.Visibility = Visibility.Visible;
+                        tb_effect_zPos.Visibility = Visibility.Visible;
+                        tb_effect_xRotLabel.Visibility = Visibility.Visible;
+                        tb_effect_yRotLabel.Visibility = Visibility.Visible;
+                        tb_effect_zRotLabel.Visibility = Visibility.Visible;
+                        tb_effect_xRot.Visibility = Visibility.Visible;
+                        tb_effect_yRot.Visibility = Visibility.Visible;
+                        tb_effect_zRot.Visibility = Visibility.Visible;
+                        break;
+                    case "Object":
+                        if (effectTypeChange) {
+                            (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new ObjectEffect(ef);
+                        }
+                        tb_effect_object.Visibility = Visibility.Visible;
+                        tb_effect_objectLabel.Visibility = Visibility.Visible;
+                        tb_effect_xRotLabel.Visibility = Visibility.Visible;
+                        tb_effect_yRotLabel.Visibility = Visibility.Visible;
+                        tb_effect_zRotLabel.Visibility = Visibility.Visible;
+                        tb_effect_xRot.Visibility = Visibility.Visible;
+                        tb_effect_yRot.Visibility = Visibility.Visible;
+                        tb_effect_zRot.Visibility = Visibility.Visible;
+                        tb_effect_xVelocityLabel.Visibility = Visibility.Visible;
+                        tb_effect_yVelocityLabel.Visibility = Visibility.Visible;
+                        tb_effect_zVelocityLabel.Visibility = Visibility.Visible;
+                        tb_effect_xVelocity.Visibility = Visibility.Visible;
+                        tb_effect_yVelocity.Visibility = Visibility.Visible;
+                        tb_effect_zVelocity.Visibility = Visibility.Visible;
+                        tb_effect_xAngVelocityLabel.Visibility = Visibility.Visible;
+                        tb_effect_yAngVelocityLabel.Visibility = Visibility.Visible;
+                        tb_effect_zAngVelocityLabel.Visibility = Visibility.Visible;
+                        tb_effect_xAngVelocity.Visibility = Visibility.Visible;
+                        tb_effect_yAngVelocity.Visibility = Visibility.Visible;
+                        tb_effect_zAngVelocity.Visibility = Visibility.Visible;
+                        break;
+                }
             }
+            Refresh();
         }
         private void lv_operationsList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_operationsList.SelectedItem != null) {
@@ -423,10 +524,7 @@ namespace SOLM {
         private void tb_operationCooldown_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_operationsList.SelectedIndex != -1) {
                 Operation o = lv_operationsList.SelectedItem as Operation;
-                float? value = SanitizeFloat(tb_operationCooldown);
-                if (value.HasValue) {
-                    o.cooldown = (float)value;
-                }
+                o.cooldown = tb_operationCooldown.Text;
             }
         }
         private void tb_operationDescription_TextChanged(object sender, TextChangedEventArgs e) {
@@ -505,11 +603,9 @@ namespace SOLM {
             DeleteItem(lv_operationsList);
         }
         private void lv_objectList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            tb_object_dryWeight.Background = Brushes.White;
             if (lv_objectList.SelectedIndex != -1) {
                 StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
                 tb_object_name.Text = so.name;
-                tb_object_dryWeight.Text = so.dryWeight.ToString();
                 tb_object_model.Text = so.model;
                 lv_collidersList.ItemsSource = so.colliders;
                 lv_propertiesList.ItemsSource = so.properties;
@@ -517,7 +613,6 @@ namespace SOLM {
                 Refresh();
             } else {
                 tb_object_name.Text = "";
-                tb_object_dryWeight.Text = "";
                 tb_object_model.Text = "";
                 lv_collidersList.ItemsSource = null;
                 lv_propertiesList.ItemsSource = null;
@@ -539,15 +634,6 @@ namespace SOLM {
                 Refresh();
             }
         }
-        private void tb_object_dryWeight_TextChanged(object sender, TextChangedEventArgs e) {
-            if (lv_objectList.SelectedIndex != -1) {
-                StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
-                float? value = SanitizeFloat(tb_object_dryWeight);
-                if (value.HasValue) {
-                    so.dryWeight = (float)value;
-                }
-            }
-        }
         private void mi_objects_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_objectList);
         }
@@ -561,22 +647,36 @@ namespace SOLM {
             if (lv_propertiesList.SelectedItem != null) {
                 Property p = lv_propertiesList.SelectedItem as Property;
                 tb_property_name.Text = p.name;
+                if (new string[] { "hp", "armor", "max temperature", "mass" }.Contains(p.name)) {
+                    tb_property_name.IsReadOnly = true;
+                    cb_property_type.IsReadOnly = true;
+                    tb_property_lBound.IsReadOnly = true;
+                } else {
+                    tb_property_name.IsReadOnly = false;
+                    cb_property_type.IsReadOnly = false;
+                    tb_property_lBound.IsReadOnly = false;
+                }
+
                 propertyTypeChange = false;
                 if (p is ContainerProperty) {
                     cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Container");
                     tb_property_uBound.Text = (p as ContainerProperty).uBound.ToString();
                     tb_property_containerResource.Text = (p as ContainerProperty).resource;
+                    tb_property_default.Text = (p as ContainerProperty).defaultValue.ToString();
                 } else if (p is IntegerProperty) {
                     cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Integer");
                     tb_property_uBound.Text = (p as IntegerProperty).uBound.ToString();
                     tb_property_lBound.Text = (p as IntegerProperty).lBound.ToString();
+                    tb_property_default.Text = (p as IntegerProperty).defaultValue.ToString();
                 } else if (p is RealProperty) {
                     cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Real");
                     tb_property_uBound.Text = (p as RealProperty).uBound.ToString();
                     tb_property_lBound.Text = (p as RealProperty).lBound.ToString();
+                    tb_property_default.Text = (p as RealProperty).defaultValue.ToString();
                 } else if (p is EnumProperty) {
                     cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf("Enum");
                     dg_property_enumValues.ItemsSource = (p as EnumProperty).enums;
+                    tb_property_default.Text = (p as EnumProperty).defaultValue.ToString();
                     dg_property_enumValues.Items.Refresh();
                 }
                 propertyTypeChange = true;
@@ -587,7 +687,14 @@ namespace SOLM {
         private void tb_property_name_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_propertiesList.SelectedItem != null) {
                 Property p = lv_propertiesList.SelectedItem as Property;
-                p.name = tb_property_name.Text;
+                if (!(new string[] { "hp", "armor", "max temperature", "mass" }.Contains(tb_property_name.Text))) {
+                    p.name = tb_property_name.Text;
+                    tb_property_name.Background = Brushes.White;
+                } else if (p.name != tb_property_name.Text) {
+                    tb_property_name.Background = Brushes.Red;
+                } else {
+                    tb_property_name.Background = Brushes.White;
+                }
                 Refresh();
             }
         }
@@ -666,30 +773,28 @@ namespace SOLM {
                 float? fValue;
                 int? iValue;
                 if (p is ContainerProperty) {
-                    fValue = SanitizeFloat(tb_property_uBound);
-                    if (fValue.HasValue) {
-                        (p as ContainerProperty).uBound = (float)fValue;
-                    }
+                    fValue = SanitizeFloat(tb_property_uBound, true);
+                    (p as ContainerProperty).uBound = fValue;
                 }
                 if (p is RealProperty) {
-                    fValue = SanitizeFloat(tb_property_uBound);
+                    fValue = SanitizeFloat(tb_property_uBound, true);
                     if (fValue.HasValue) {
                         if ((p as RealProperty).lBound.HasValue && (p as RealProperty).lBound >= fValue) {
                             fValue = (p as RealProperty).lBound + 0.00001f;
                             tb_property_uBound.Text = fValue.ToString();
                         }
-                        (p as RealProperty).uBound = (float)fValue;
                     }
+                    (p as RealProperty).uBound = fValue;
                 }
                 if (p is IntegerProperty) {
-                    iValue = SanitizeInt(tb_property_uBound);
+                    iValue = SanitizeInt(tb_property_uBound,true);
                     if (iValue.HasValue) {
                         if ((p as IntegerProperty).lBound.HasValue && (p as IntegerProperty).lBound >= iValue) {
                             iValue = (p as IntegerProperty).lBound + 1;
                             tb_property_uBound.Text = iValue.ToString();
                         }
-                        (p as IntegerProperty).uBound = (int)iValue;
                     }
+                    (p as IntegerProperty).uBound = iValue;
                 }
             }
         }
@@ -699,24 +804,24 @@ namespace SOLM {
                 float? fValue;
                 int? iValue;
                 if (p is RealProperty) {
-                    fValue = SanitizeFloat(tb_property_lBound);
+                    fValue = SanitizeFloat(tb_property_lBound, true);
                     if (fValue.HasValue) {
                         if ((p as RealProperty).uBound.HasValue && (p as RealProperty).uBound <= fValue) {
                             fValue = (p as RealProperty).uBound - 0.00001f;
                             tb_property_lBound.Text = fValue.ToString();
                         }
-                        (p as RealProperty).lBound = (float)fValue;
                     }
+                    (p as RealProperty).lBound = fValue;
                 }
                 if (p is IntegerProperty) {
-                    iValue = SanitizeInt(tb_property_lBound);
+                    iValue = SanitizeInt(tb_property_lBound, true);
                     if (iValue.HasValue) {
                         if ((p as IntegerProperty).uBound.HasValue && (p as IntegerProperty).uBound <= iValue) {
                             iValue = (p as IntegerProperty).uBound - 1;
                             tb_property_lBound.Text = iValue.ToString();
                         }
-                        (p as IntegerProperty).lBound = (int)iValue;
                     }
+                    (p as IntegerProperty).lBound = iValue;
                 }
             }
         }
@@ -730,25 +835,32 @@ namespace SOLM {
         private void SanitizeString(TextBox textbox) {
             textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) select c).ToArray());
         }
-        private float? SanitizeFloat(TextBox textbox) {
+        private float? SanitizeFloat(TextBox textbox, bool allowNull = false) {
             float value;
             if (float.TryParse(textbox.Text, out value)) {
-                //textbox.Text = value.ToString();
                 textbox.Background = Brushes.White;
                 return value;
             } else {
-                textbox.Background = Brushes.Red;
+                if (allowNull && textbox.Text == "") {
+                    textbox.Background = Brushes.White;
+                } else {
+                    textbox.Background = Brushes.Red;
+                }
                 return null;
             }
         }
-        private int? SanitizeInt(TextBox textbox) {
+        private int? SanitizeInt(TextBox textbox, bool allowNull = false) {
             int value;
             if (int.TryParse(textbox.Text, out value)) {
                 //textbox.Text = value.ToString();
                 textbox.Background = Brushes.White;
                 return value;
             } else {
-                textbox.Background = Brushes.Red;
+                if (allowNull && textbox.Text == "") {
+                    textbox.Background = Brushes.White;
+                } else {
+                    textbox.Background = Brushes.Red;
+                }
                 return null;
             }
         }
@@ -907,6 +1019,15 @@ namespace SOLM {
                 }
             }
         }
+        private void cb_effect_property_DropDownOpened(object sender, EventArgs e) {
+            if (lv_objectList.SelectedItem != null && lv_effectList.SelectedItem != null) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                cb_effect_property.ItemsSource = (from p in (lv_objectList.SelectedItem as StarpointObject).properties select p.name).ToList();
+                if (ef is PropertyEffect) {
+                    cb_effect_property.SelectedIndex = (cb_effect_property.ItemsSource as List<string>).IndexOf((ef as PropertyEffect).property);
+                }
+            }
+        }
         private void cb_requirement_property_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_requirementList.SelectedIndex != -1 && lv_requirementList.SelectedItem is PropertyRequirement && cb_requirement_property.SelectedIndex != -1) {
                 PropertyRequirement r = lv_requirementList.SelectedItem as PropertyRequirement;
@@ -935,6 +1056,31 @@ namespace SOLM {
                 if (value.HasValue) {
                     r.value = (float)value;
                 }
+                Refresh();
+            }
+        }
+        private void cb_effect_property_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PropertyEffect && cb_effect_property.SelectedIndex != -1) {
+                PropertyEffect ef = lv_effectList.SelectedItem as PropertyEffect;
+                ef.property = cb_effect_property.SelectedItem.ToString();
+                Refresh();
+            }
+        }
+        private void cb_effect_assignment_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_effectList.SelectedItem != null && cb_effect_assignment.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is PropertyEffect) {
+                    (ef as PropertyEffect).assignmentType = ((Effect.AssignmentType)cb_effect_assignment.SelectedIndex);
+                } else if (ef is ResourceEffect) {
+                    (ef as ResourceEffect).assignmentType = ((Effect.AssignmentType)cb_effect_assignment.SelectedIndex);
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_resource_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ResourceEffect) {
+                ResourceEffect ef = lv_effectList.SelectedItem as ResourceEffect;
+                ef.resource = tb_effect_resource.Text;
                 Refresh();
             }
         }
@@ -970,6 +1116,221 @@ namespace SOLM {
                 }
             }
         }
+        private void cb_effect_physicalType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_effectList.SelectedItem != null && lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect && cb_effect_physicalType.SelectedIndex != -1) {
+                PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
+                ef.physicalType = ((Effect.PhysicalType)cb_effect_physicalType.SelectedIndex);
+                Refresh();
+            }
+        }
+        private void tb_effect_value_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is PropertyEffect) {
+                    (ef as PropertyEffect).value = tb_effect_value.Text;
+                } else if (ef is ResourceEffect) {
+                    (ef as ResourceEffect).value = tb_effect_value.Text;
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_xValue_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect) {
+                PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
+                ef.xValue = tb_effect_xValue.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_yValue_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect) {
+                PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
+                ef.yValue = tb_effect_yValue.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_zValue_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect) {
+                PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
+                ef.zValue = tb_effect_zValue.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_audioClip_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is AudioEffect) {
+                AudioEffect ef = lv_effectList.SelectedItem as AudioEffect;
+                ef.audioClip = tb_effect_audioClip.Text;
+                Refresh();
+            }
+        }
+        private void cb_effect_audioMode_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (lv_effectList.SelectedItem != null && lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is AudioEffect && cb_effect_audioMode.SelectedIndex != -1) {
+                AudioEffect ef = lv_effectList.SelectedItem as AudioEffect;
+                ef.audioMode = ((Effect.AudioMode)cb_effect_audioMode.SelectedIndex);
+                Refresh();
+            }
+        }
+        private void tb_effect_visual_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is VisualEffect) {
+                VisualEffect ef = lv_effectList.SelectedItem as VisualEffect;
+                (ef as VisualEffect).visual = tb_effect_visual.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_object_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
+                ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                (ef as ObjectEffect).obj = tb_effect_object.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_xPos_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is PhysicalEffect) {
+                    (ef as PhysicalEffect).xPos = tb_effect_xPos.Text;
+                } else if (ef is VisualEffect) {
+                    (ef as VisualEffect).xPos = tb_effect_xPos.Text;
+                } else if (ef is ObjectEffect) {
+                    (ef as ObjectEffect).xPos = tb_effect_xPos.Text;
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_yPos_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is PhysicalEffect) {
+                    (ef as PhysicalEffect).yPos = tb_effect_yPos.Text;
+                } else if (ef is VisualEffect) {
+                    (ef as VisualEffect).yPos = tb_effect_yPos.Text;
+                } else if (ef is ObjectEffect) {
+                    (ef as ObjectEffect).yPos = tb_effect_yPos.Text;
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_zPos_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is PhysicalEffect) {
+                    (ef as PhysicalEffect).zPos = tb_effect_zPos.Text;
+                } else if (ef is VisualEffect) {
+                    (ef as VisualEffect).zPos = tb_effect_zPos.Text;
+                } else if (ef is ObjectEffect) {
+                    (ef as ObjectEffect).zPos = tb_effect_zPos.Text;
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_xRot_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is VisualEffect) {
+                    (ef as VisualEffect).xRot = tb_effect_xRot.Text;
+                } else if (ef is ObjectEffect) {
+                    (ef as ObjectEffect).xRot = tb_effect_xRot.Text;
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_yRot_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is VisualEffect) {
+                    (ef as VisualEffect).yRot = tb_effect_yRot.Text;
+                } else if (ef is ObjectEffect) {
+                    (ef as ObjectEffect).yRot = tb_effect_yRot.Text;
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_zRot_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1) {
+                Effect ef = lv_effectList.SelectedItem as Effect;
+                if (ef is VisualEffect) {
+                    (ef as VisualEffect).zRot = tb_effect_zRot.Text;
+                } else if (ef is ObjectEffect) {
+                    (ef as ObjectEffect).zRot = tb_effect_zRot.Text;
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_xVelocity_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
+                ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                ef.xVel = tb_effect_xVelocity.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_yVelocity_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
+                ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                ef.yVel = tb_effect_yVelocity.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_zVelocity_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
+                ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                ef.zVel = tb_effect_zVelocity.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_xAngVelocity_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
+                ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                ef.xAng = tb_effect_xAngVelocity.Text;
+                Refresh();
+            }
+        }
+        private void cb_property_control_Checked(object sender, RoutedEventArgs e) {
+            if (lv_propertiesList.SelectedItem != null) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                p.control = (bool)cb_property_control.IsChecked;
+                Refresh();
+            }
+        }
+        private void tb_property_default_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_propertiesList.SelectedItem != null) {
+                Property p = lv_propertiesList.SelectedItem as Property;
+                if (p is ContainerProperty) {
+                    float? value = SanitizeFloat(tb_property_default);
+                    if (value.HasValue) {
+                        (p as ContainerProperty).defaultValue = value.Value;
+                    }
+                } else if (p is RealProperty) {
+                    float? value = SanitizeFloat(tb_property_default);
+                    if (value.HasValue) {
+                        (p as RealProperty).defaultValue = value.Value;
+                    }
+                } else if (p is IntegerProperty) {
+                    int? value = SanitizeInt(tb_property_default);
+                    if (value.HasValue) {
+                        (p as IntegerProperty).defaultValue = value.Value;
+                    }
+                } else if (p is EnumProperty) {
+                    int? value = SanitizeInt(tb_property_default);
+                    if (value.HasValue) {
+                        (p as EnumProperty).defaultValue = value.Value;
+                    }
+                }
+                Refresh();
+            }
+        }
+        private void tb_effect_yAngVelocity_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
+                ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                ef.yAng = tb_effect_yAngVelocity.Text;
+                Refresh();
+            }
+        }
+        private void tb_effect_zAngVelocity_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
+                ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                ef.yAng = tb_effect_yAngVelocity.Text;
+                Refresh();
+            }
+        }
         #endregion
         private bool ValidateLibrary() {
             int errorCount = 0;
@@ -983,6 +1344,41 @@ namespace SOLM {
                 }
                 List<string> propertyNames = new List<string>();
                 foreach (Property p in so.properties) {
+                    if (p is ContainerProperty) {
+                        ContainerProperty cp = p as ContainerProperty;
+                        if (cp.uBound.HasValue && cp.defaultValue > cp.uBound.Value) {
+                            MessageBox.Show("Property " + p.name + " in " + so.name + " has a default value outside of specified bounds!");
+                            errorCount++;
+                        }
+                    } else if (p is RealProperty) {
+                        RealProperty rp = p as RealProperty;
+                        if ((rp.uBound.HasValue && rp.defaultValue > rp.uBound.Value) || (rp.lBound.HasValue && rp.defaultValue < rp.lBound.Value)) {
+                            MessageBox.Show("Property " + p.name + " in " + so.name + " has a default value outside of specified bounds!");
+                            errorCount++;
+                        }
+                    } else if (p is IntegerProperty) {
+                        IntegerProperty ip = p as IntegerProperty;
+                        if ((ip.uBound.HasValue && ip.defaultValue > ip.uBound.Value) || (ip.lBound.HasValue && ip.defaultValue < ip.lBound.Value)) {
+                            MessageBox.Show("Property " + p.name + " in " + so.name + " has a default value outside of specified bounds!");
+                            errorCount++;
+                        }
+                    } else if (p is EnumProperty) {
+                        EnumProperty ep = p as EnumProperty;
+                        List<EnumPropertyValue> epvList = new List<EnumPropertyValue>();
+                        foreach (EnumPropertyValue epv in ep.enums) {
+                            if (epvList.Exists(x => x.name == epv.name || x.value == epv.value)) {
+                                MessageBox.Show("Property " + p.name + " in " + so.name + " has one or more duplicate enum values or names!");
+                                errorCount++;
+                                break;
+                            } else {
+                                epvList.Add(epv);
+                            }
+                        }
+                        if (!(from epv in ep.enums select epv.value).Contains(ep.defaultValue)) {
+                            MessageBox.Show("Property " + p.name + " in " + so.name + " has a default value not specified in enum list!");
+                            errorCount++;
+                        }
+                    }
                     if (!propertyNames.Contains(p.name)) {
                         propertyNames.Add(p.name);
                     } else {

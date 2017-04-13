@@ -4,58 +4,66 @@
     <StarpointObject>
       <properties>
         <Property xsi:type="RealProperty">
-          <description />
-          <name>dsfd</name>
-          <visible>false</visible>
+          <description>The hit points of this object.</description>
+          <name>hp</name>
+          <visible>true</visible>
+          <control>false</control>
+          <uBound>1</uBound>
+          <lBound>0</lBound>
+          <defaultValue>1</defaultValue>
+        </Property>
+        <Property xsi:type="RealProperty">
+          <description>The maximum damage this object can block before it takes damage to hit points.</description>
+          <name>armor</name>
+          <visible>true</visible>
+          <control>false</control>
           <uBound xsi:nil="true" />
-          <lBound xsi:nil="true" />
+          <lBound>0</lBound>
+          <defaultValue>0</defaultValue>
+        </Property>
+        <Property xsi:type="RealProperty">
+          <description>The mass of this object.</description>
+          <name>mass</name>
+          <visible>true</visible>
+          <control>false</control>
+          <uBound xsi:nil="true" />
+          <lBound>0</lBound>
+          <defaultValue>0</defaultValue>
+        </Property>
+        <Property xsi:type="RealProperty">
+          <description>The maximum temperature this object can reach before it is destroyed.</description>
+          <name>max temperature</name>
+          <visible>true</visible>
+          <control>false</control>
+          <uBound xsi:nil="true" />
+          <lBound>0</lBound>
+          <defaultValue>0</defaultValue>
+        </Property>
+        <Property xsi:type="EnumProperty">
+          <description />
+          <name>New Property</name>
+          <visible>false</visible>
+          <control>false</control>
+          <enums>
+            <EnumPropertyValue>
+              <name>a</name>
+              <value>0</value>
+            </EnumPropertyValue>
+            <EnumPropertyValue>
+              <name>b</name>
+              <value>1</value>
+            </EnumPropertyValue>
+            <EnumPropertyValue>
+              <name>c</name>
+              <value>2</value>
+            </EnumPropertyValue>
+          </enums>
+          <defaultValue>0</defaultValue>
         </Property>
       </properties>
-      <operations>
-        <Operation>
-          <requirements>
-            <Requirement xsi:type="ResourceRequirement">
-              <value>123</value>
-              <comparison>LessThanOrEquals</comparison>
-              <resource>sdfsdf</resource>
-            </Requirement>
-            <Requirement xsi:type="PropertyRequirement">
-              <value>0.333</value>
-              <comparison>LessThan</comparison>
-              <property>dsfd</property>
-            </Requirement>
-          </requirements>
-          <effects />
-          <name>New Operation</name>
-          <action>Discrete</action>
-          <trigger>Auto</trigger>
-          <cooldown>0</cooldown>
-          <description />
-        </Operation>
-        <Operation>
-          <requirements>
-            <Requirement xsi:type="ResourceRequirement">
-              <value>123</value>
-              <comparison>LessThanOrEquals</comparison>
-              <resource>sdfsdf</resource>
-            </Requirement>
-            <Requirement xsi:type="ResourceRequirement">
-              <value>0.333</value>
-              <comparison>LessThan</comparison>
-              <resource />
-            </Requirement>
-          </requirements>
-          <effects />
-          <name>New Operation</name>
-          <action>Discrete</action>
-          <trigger>Auto</trigger>
-          <cooldown>0</cooldown>
-          <description />
-        </Operation>
-      </operations>
+      <operations />
       <colliders />
       <name>New Object</name>
-      <dryWeight>0</dryWeight>
       <model>Model Name.fbx</model>
     </StarpointObject>
   </objects>

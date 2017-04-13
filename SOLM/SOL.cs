@@ -14,7 +14,6 @@ namespace SOLM {
                 return bundle + "." + name + ".sol";
             }
         }
-
         public SOL() {
             objects = new List<StarpointObject>();
         }
