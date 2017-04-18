@@ -15,19 +15,25 @@ using System.Windows.Navigation;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 using HelixToolkit.Wpf;
+using System.Windows.Media.Media3D;
 
 namespace SOLM {
     public partial class MainWindow : Window {
         SOL sol;
         private bool propertyTypeChange, colliderTypeChange, requirementTypeChange, effectTypeChange;
         private readonly string CREATED_LIBRARY_PATH = Environment.CurrentDirectory + @"\Created Libraries";
-        private readonly string CONVERTED_MODELS_PATH = Environment.CurrentDirectory + @"\Converted Models";
+        private readonly string CONVERTED_MODELS_PATH = Environment.CurrentDirectory + @"\Models";
         public MainWindow() {
             InitializeComponent();
             propertyTypeChange = true;
             colliderTypeChange = true;
             requirementTypeChange = true;
             effectTypeChange = true;
+            //helixViewport.ModelUpDirection = new Vector3D(0, 1, 0);
+            helixViewport.ShowViewCube = false;
+            helixViewport.ShowCoordinateSystem = true;
+            helixViewport.CameraMode = CameraMode.Inspect;
+            helixViewport.Camera.UpDirection = new Vector3D(0, 1, 0);
             cb_operation_actionType.ItemsSource = new List<string>(new string[] { "Discrete", "Continuous" });
             cb_operation_trigger.ItemsSource = new List<string>(new string[] { "Auto", "Semiauto", "Passive" });
             cb_effect_type.ItemsSource = new List<string>(new string[] { "Property", "Resource", "Physical", "Audio", "Visual", "Object" });
@@ -121,9 +127,126 @@ namespace SOLM {
 
         }
         private void b_loadModel_Click(object sender, RoutedEventArgs e) {
+            UpdateViewport();
+        }
 
+        private void UpdateViewport() {
+            //helixViewport.Camera.Transform = new RotateTransform3D(new QuaternionRotation3D(Euler(0, 90, 0)));
+            helixViewport.Children.Clear();
+            helixViewport.Children.Add(new SunLight());
+            GridLinesVisual3D glv = new GridLinesVisual3D();
+            glv.Width = 8;
+            glv.Length = 8;
+            glv.MinorDistance = 0.25f;
+            glv.MajorDistance = 1;
+            glv.Thickness = 0.01f;
+            glv.Normal = new Vector3D(0, 1, 0);
+            //glv.Transform = new RotateTransform3D(new QuaternionRotation3D(Euler(90, 0, 0)));
+            helixViewport.Children.Add(glv);
+            if (lv_objectList.SelectedItem != null) {
+                StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
+                if (File.Exists(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).GetObjModel())) {
+                    ModelVisual3D mv3d = new ModelVisual3D();
+                    mv3d.Content = new GeometryModel3D(LoadFromFile(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).GetObjModel()), new DiffuseMaterial(Brushes.SlateGray));
+                    Matrix3D m3d = Matrix3D.Identity;
+                    m3d.Scale(new Vector3D(o.xScale, o.yScale, o.zScale));
+                    //m3d.Rotate(Euler(c.xRot, c.yRot, c.zRot));
+                    //m3d.Translate(new Vector3D(c.xOffset, c.yOffset, c.zOffset));
+                    mv3d.Transform = new MatrixTransform3D(m3d);
+                    helixViewport.Children.Add(mv3d);
+                } else if (File.Exists(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).fqModel)) {
+                } else {
+                    
+                }
+                Brush colliderBrush;
+                foreach (StarpointCollider c in (lv_objectList.SelectedItem as StarpointObject).colliders) {
+                    if (c == lv_collidersList.SelectedItem) {
+                        colliderBrush = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0));
+                    } else {
+                        colliderBrush = new SolidColorBrush(Color.FromArgb(128, 0, 0, 255));
+                    }
+                    if (c is Cube) {
+                        ModelVisual3D mv3d = new ModelVisual3D();
+                        mv3d.Content = new GeometryModel3D(LoadFromFile(CONVERTED_MODELS_PATH + @"\cube.obj"), new DiffuseMaterial(colliderBrush));
+                        Matrix3D m3d = Matrix3D.Identity;
+                        m3d.Scale(new Vector3D(o.xScale, o.yScale, o.zScale));
+                        m3d.Scale(new Vector3D((c as Cube).xSize, (c as Cube).ySize, (c as Cube).zSize));
+                        m3d.Rotate(Euler(c.xRot, c.yRot, c.zRot));
+                        m3d.Translate(new Vector3D(c.xOffset, c.yOffset, c.zOffset));
+                        mv3d.Transform = new MatrixTransform3D(m3d);
+                        helixViewport.Children.Add(mv3d);
+                    } else if (c is Sphere) {
+                        ModelVisual3D mv3d = new ModelVisual3D();
+                        mv3d.Content = new GeometryModel3D(LoadFromFile(CONVERTED_MODELS_PATH + @"\sphere.obj"), new DiffuseMaterial(colliderBrush));
+                        Matrix3D m3d = Matrix3D.Identity;
+                        m3d.Scale(new Vector3D(o.xScale, o.yScale, o.zScale));
+                        m3d.Scale(new Vector3D((c as Sphere).radius, (c as Sphere).radius, (c as Sphere).radius));
+                        m3d.Rotate(Euler(c.xRot, c.yRot, c.zRot));
+                        m3d.Translate(new Vector3D(c.xOffset, c.yOffset, c.zOffset));
+                        mv3d.Transform = new MatrixTransform3D(m3d);
+                        helixViewport.Children.Add(mv3d);
+                    } else if (c is Cylinder) {
+                        ModelVisual3D mv3d = new ModelVisual3D();
+                        mv3d.Content = new GeometryModel3D(LoadFromFile(CONVERTED_MODELS_PATH + @"\cylinder.obj"), new DiffuseMaterial(colliderBrush));
+                        Matrix3D m3d = Matrix3D.Identity;
+                        m3d.Scale(new Vector3D(o.xScale, o.yScale, o.zScale));
+                        m3d.Scale(new Vector3D((c as Cylinder).radius, (c as Cylinder).ySize, (c as Cylinder).radius));
+                        m3d.Rotate(Euler(c.xRot, c.yRot, c.zRot));
+                        m3d.Translate(new Vector3D(c.xOffset, c.yOffset, c.zOffset));
+                        mv3d.Transform = new MatrixTransform3D(m3d);
+                        helixViewport.Children.Add(mv3d);
+                    } else if (c is Capsule) {
+                        ModelVisual3D mv3d = new ModelVisual3D();
+                        mv3d.Content = new GeometryModel3D(LoadFromFile(CONVERTED_MODELS_PATH + @"\capsule.obj"), new DiffuseMaterial(colliderBrush));
+                        Matrix3D m3d = Matrix3D.Identity;
+                        m3d.Scale(new Vector3D(o.xScale, o.yScale, o.zScale));
+                        m3d.Scale(new Vector3D((c as Capsule).radius, (c as Capsule).ySize, (c as Capsule).radius));
+                        m3d.Rotate(Euler(c.xRot, c.yRot, c.zRot));
+                        m3d.Translate(new Vector3D(c.xOffset, c.yOffset, c.zOffset));
+                        mv3d.Transform = new MatrixTransform3D(m3d);
+                        helixViewport.Children.Add(mv3d);
+                    }
+                }
+            }
+            helixViewport.Items.Refresh();
         }
         #region completed and stable
+        public static Quaternion Euler(float y, float x, float z) {
+            y *= 0.0174533f;
+            x *= 0.0174533f;
+            z *= 0.0174533f;
+
+            double yawOver2 = y * 0.5f;
+            float cosYawOver2 = (float)System.Math.Cos(yawOver2);
+            float sinYawOver2 = (float)System.Math.Sin(yawOver2);
+            double pitchOver2 = x * 0.5f;
+            float cosPitchOver2 = (float)System.Math.Cos(pitchOver2);
+            float sinPitchOver2 = (float)System.Math.Sin(pitchOver2);
+            double rollOver2 = z * 0.5f;
+            float cosRollOver2 = (float)System.Math.Cos(rollOver2);
+            float sinRollOver2 = (float)System.Math.Sin(rollOver2);
+            Quaternion result = new Quaternion();
+            result.W = cosYawOver2 * cosPitchOver2 * cosRollOver2 + sinYawOver2 * sinPitchOver2 * sinRollOver2;
+            result.X = sinYawOver2 * cosPitchOver2 * cosRollOver2 + cosYawOver2 * sinPitchOver2 * sinRollOver2;
+            result.Y = cosYawOver2 * sinPitchOver2 * cosRollOver2 - sinYawOver2 * cosPitchOver2 * sinRollOver2;
+            result.Z = cosYawOver2 * cosPitchOver2 * sinRollOver2 - sinYawOver2 * sinPitchOver2 * cosRollOver2;
+
+            return result;
+        }
+        private Geometry3D LoadFromFile(string objPath) {
+            ModelImporter mi = new ModelImporter();
+            Model3DGroup group = mi.Load(objPath);
+            MeshBuilder TestMesh = new MeshBuilder(false, false);
+
+
+            foreach (var m in group.Children) {
+                var mGeo = m as GeometryModel3D;
+                var mesh = (MeshGeometry3D)((Geometry3D)mGeo.Geometry);
+                if (mesh != null) TestMesh.Append(mesh);
+            }
+            return TestMesh.ToMesh();
+
+        }
         private void Refresh() {
             int lv_propertiesList_selectedIndex = lv_propertiesList.SelectedIndex;
             int lv_collidersList_selectedIndex = lv_collidersList.SelectedIndex;
@@ -149,10 +272,11 @@ namespace SOLM {
             if (lv_effectsList_selectedIndex <= lv_effectList.Items.Count) {
                 lv_effectList.SelectedIndex = lv_effectsList_selectedIndex;
             }
+            UpdateViewport();
         }
         private void NewItem(ListView listView) {
             if (listView == lv_objectList && listView.ItemsSource != null) {
-                (listView.ItemsSource as List<StarpointObject>).Add(new StarpointObject());
+                (listView.ItemsSource as List<StarpointObject>).Add(new StarpointObject(sol));
             } else if (listView == lv_operationsList && listView.ItemsSource != null) {
                 (listView.ItemsSource as List<Operation>).Add(new Operation());
             } else if (listView == lv_propertiesList && listView.ItemsSource != null) {
@@ -219,28 +343,44 @@ namespace SOLM {
             Refresh();
         }
         private void DeleteItem(ListView listView) {
-            if (listView == lv_objectList && listView.SelectedIndex != -1) {
-                (listView.ItemsSource as List<StarpointObject>).RemoveAt(lv_objectList.SelectedIndex);
-            } else if (listView == lv_operationsList && listView.SelectedIndex != -1) {
-                (listView.ItemsSource as List<Operation>).RemoveAt(lv_operationsList.SelectedIndex);
-            } else if (listView == lv_propertiesList && listView.SelectedIndex != -1) {
-                (listView.ItemsSource as List<Property>).RemoveAt(lv_propertiesList.SelectedIndex);
-            } else if (listView == lv_requirementList && listView.SelectedIndex != -1) {
-                (listView.ItemsSource as List<Requirement>).RemoveAt(lv_requirementList.SelectedIndex);
-            } else if (listView == lv_effectList && listView.SelectedIndex != -1) {
-                (listView.ItemsSource as List<Effect>).RemoveAt(lv_effectList.SelectedIndex);
-            } else if (listView == lv_collidersList && listView.SelectedIndex != -1) {
-                (listView.ItemsSource as List<Effect>).RemoveAt(lv_collidersList.SelectedIndex);
+            if (listView == lv_objectList && listView.SelectedItem != null) {
+                (listView.ItemsSource as List<StarpointObject>).RemoveAt(listView.SelectedIndex);
+            } else if (listView == lv_operationsList && listView.SelectedItem != null) {
+                (listView.ItemsSource as List<Operation>).RemoveAt(listView.SelectedIndex);
+            } else if (listView == lv_propertiesList && listView.SelectedItem != null) {
+                (listView.ItemsSource as List<Property>).RemoveAt(listView.SelectedIndex);
+            } else if (listView == lv_requirementList && listView.SelectedItem != null) {
+                (listView.ItemsSource as List<Requirement>).RemoveAt(listView.SelectedIndex);
+            } else if (listView == lv_effectList && listView.SelectedItem != null) {
+                (listView.ItemsSource as List<Effect>).RemoveAt(listView.SelectedIndex);
+            } else if (listView == lv_collidersList && listView.SelectedItem != null) {
+                (listView.ItemsSource as List<StarpointCollider>).RemoveAt(listView.SelectedIndex);
             }
             Refresh();
         }
         private void tb_bundleName_TextChanged(object sender, TextChangedEventArgs e) {
             SanitizeString(tb_bundleName);
             sol.bundle = tb_bundleName.Text;
+            StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
+            if (so != null) {
+                if (File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).GetObjModel()) || File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).fqModel)) {
+                    tb_object_model.Background = Brushes.White;
+                } else {
+                    tb_object_model.Background = Brushes.Red;
+                }
+            }
         }
         private void tb_libraryName_TextChanged(object sender, TextChangedEventArgs e) {
             SanitizeString(tb_libraryName);
             sol.name = tb_libraryName.Text;
+            StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
+            if (so != null) {
+                if (File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).GetObjModel()) || File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).fqModel)) {
+                    tb_object_model.Background = Brushes.White;
+                } else {
+                    tb_object_model.Background = Brushes.Red;
+                }
+            }
         }
         private void mi_colliders_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_collidersList);
@@ -610,10 +750,16 @@ namespace SOLM {
                 lv_collidersList.ItemsSource = so.colliders;
                 lv_propertiesList.ItemsSource = so.properties;
                 lv_operationsList.ItemsSource = so.operations;
+                tb_object_xScale.Text = so.xScale.ToString();
+                tb_object_yScale.Text = so.yScale.ToString();
+                tb_object_zScale.Text = so.zScale.ToString();
                 Refresh();
             } else {
                 tb_object_name.Text = "";
                 tb_object_model.Text = "";
+                tb_object_xScale.Text = "";
+                tb_object_yScale.Text = "";
+                tb_object_zScale.Text = "";
                 lv_collidersList.ItemsSource = null;
                 lv_propertiesList.ItemsSource = null;
                 lv_operationsList.ItemsSource = null;
@@ -631,6 +777,11 @@ namespace SOLM {
                 StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
                 SanitizeString(tb_object_model);
                 so.model = tb_object_model.Text;
+                if (File.Exists(CONVERTED_MODELS_PATH + '\\' + so.GetObjModel()) || File.Exists(CONVERTED_MODELS_PATH + '\\' + so.fqModel)) {
+                    tb_object_model.Background = Brushes.White;
+                } else {
+                    tb_object_model.Background = Brushes.Red;
+                }
                 Refresh();
             }
         }
@@ -886,6 +1037,9 @@ namespace SOLM {
                 if (File.Exists(dialog.FileName)) {
                     using (FileStream fs = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read)) {
                         sol = serializer.Deserialize(fs) as SOL;
+                        foreach (StarpointObject so in sol.objects) {
+                            so.library = sol;
+                        }
                         lv_objectList.ItemsSource = sol.objects;
                         Refresh();
                         fs.Close();
@@ -921,6 +1075,7 @@ namespace SOLM {
                     tb_collider_ySize.Text = (c as Cylinder).ySize.ToString();
                 }
                 colliderTypeChange = true;
+                Refresh();
             }
         }
         private void tb_collider_xSize_TextChanged(object sender, TextChangedEventArgs e) {
@@ -931,6 +1086,7 @@ namespace SOLM {
                     c.xSize = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_ySize_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
@@ -946,6 +1102,7 @@ namespace SOLM {
                     }
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_zSize_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1 && lv_collidersList.SelectedItem is Cube) {
@@ -955,6 +1112,7 @@ namespace SOLM {
                     c.zSize = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_xOffset_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
@@ -964,6 +1122,7 @@ namespace SOLM {
                     c.xOffset = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_yOffset_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
@@ -973,6 +1132,7 @@ namespace SOLM {
                     c.yOffset = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_zOffset_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
@@ -982,6 +1142,7 @@ namespace SOLM {
                     c.zOffset = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_xRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
@@ -991,6 +1152,7 @@ namespace SOLM {
                     c.xRot = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_yRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
@@ -1000,6 +1162,7 @@ namespace SOLM {
                     c.yRot = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void tb_collider_zRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
@@ -1009,6 +1172,7 @@ namespace SOLM {
                     c.zRot = (float)value;
                 }
             }
+            UpdateViewport();
         }
         private void cb_requirement_property_DropDownOpened(object sender, EventArgs e) {
             if (lv_objectList.SelectedItem != null && lv_requirementList.SelectedItem != null) {
@@ -1052,10 +1216,7 @@ namespace SOLM {
         private void tb_requirement_value_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_requirementList.SelectedIndex != -1) {
                 Requirement r = lv_requirementList.SelectedItem as Requirement;
-                float? value = SanitizeFloat(tb_requirement_value);
-                if (value.HasValue) {
-                    r.value = (float)value;
-                }
+                r.value = tb_operationCooldown.Text;
                 Refresh();
             }
         }
@@ -1088,7 +1249,7 @@ namespace SOLM {
             if (lv_requirementList.SelectedItem != null) {
                 Requirement r = lv_requirementList.SelectedItem as Requirement;
                 cb_requirement_comparison.SelectedIndex = (int)r.comparison;
-                tb_requirement_value.Text = r.value.ToString();
+                tb_requirement_value.Text = r.value;
                 requirementTypeChange = false;
                 if (r is PropertyRequirement) {
                     cb_requirement_type.SelectedIndex = (cb_requirement_type.ItemsSource as List<string>).IndexOf("Property");
@@ -1115,6 +1276,7 @@ namespace SOLM {
                     }
                 }
             }
+            UpdateViewport();
         }
         private void cb_effect_physicalType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_effectList.SelectedItem != null && lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect && cb_effect_physicalType.SelectedIndex != -1) {
@@ -1316,6 +1478,36 @@ namespace SOLM {
                 }
                 Refresh();
             }
+        }
+        private void tb_object_xScale_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_objectList.SelectedItem != null) {
+                StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
+                float? value = SanitizeFloat(tb_object_xScale);
+                if (value.HasValue) {
+                    o.xScale = value.Value;
+                }
+            }
+            Refresh();
+        }
+        private void tb_object_yScale_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_objectList.SelectedItem != null) {
+                StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
+                float? value = SanitizeFloat(tb_object_yScale);
+                if (value.HasValue) {
+                    o.yScale = value.Value;
+                }
+            }
+            Refresh();
+        }
+        private void tb_object_zScale_TextChanged(object sender, TextChangedEventArgs e) {
+            if (lv_objectList.SelectedItem != null) {
+                StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
+                float? value = SanitizeFloat(tb_object_zScale);
+                if (value.HasValue) {
+                    o.zScale = value.Value;
+                }
+            }
+            Refresh();
         }
         private void tb_effect_yAngVelocity_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {

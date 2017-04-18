@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace SOLM {
     [XmlInclude(typeof(ResourceRequirement)), XmlInclude(typeof(PropertyRequirement))]
     public class Requirement {
-        public float value { get; set; }
+        public string value { get; set; }
         public enum ComparisonType { Equals, LessThan, GreaterThan, LessThanOrEquals, GreaterThanOrEquals, NotEquals };
         public enum RequirementType { Resource, Property };
         public RequirementType type {
@@ -31,7 +31,7 @@ namespace SOLM {
         }
         public ComparisonType comparison { get; set; }
         public Requirement() {
-            value = 0;
+            value = "0";
             comparison = ComparisonType.Equals;
         }
         public Requirement(Requirement copySource) {

@@ -53,9 +53,9 @@ namespace SOLM {
     public class Cube : StarpointCollider {
         public float xSize, ySize, zSize;
         public Cube() : base() {
-            xSize = 0;
-            ySize = 0;
-            zSize = 0;
+            xSize = 1;
+            ySize = 1;
+            zSize = 1;
         }
         public Cube(float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, float xSize, float ySize, float zSize) : base(xOffset, yOffset, zOffset, xRot, yRot, zRot) {
             this.xSize = xSize;
@@ -67,12 +67,16 @@ namespace SOLM {
             ySize = copySource.ySize;
             zSize = copySource.zSize;
         }
-        public Cube(StarpointCollider copySource) : base(copySource) { }
+        public Cube(StarpointCollider copySource) : base(copySource) {
+            xSize = 1;
+            ySize = 1;
+            zSize = 1;
+        }
     }
     public class Sphere : StarpointCollider {
         public float radius;
         public Sphere() : base() {
-            radius = 0;
+            radius = 1;
         }
         public Sphere(float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, float radius) : base(xOffset, yOffset, zOffset, xRot, yRot, zRot) {
             this.radius = radius;
@@ -80,13 +84,15 @@ namespace SOLM {
         public Sphere(Sphere copySource):base(copySource) {
             radius = copySource.radius;
         }
-        public Sphere(StarpointCollider copySource) : base(copySource) { }
+        public Sphere(StarpointCollider copySource) : base(copySource) {
+            radius = 1;
+        }
     }
     public class Capsule : StarpointCollider {
         public float radius, ySize;
         public Capsule() : base() {
-            radius = 0;
-            ySize = 0;
+            radius = 1;
+            ySize = 1;
         }
         public Capsule(float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, float radius, float ySize) : base(xOffset, yOffset, zOffset, xRot, yRot, zRot) {
             this.radius = radius;
@@ -97,13 +103,16 @@ namespace SOLM {
             radius = copySource.radius;
             ySize = copySource.ySize;
         }
-        public Capsule(StarpointCollider copySource) : base(copySource) { }
+        public Capsule(StarpointCollider copySource) : base(copySource) {
+            radius = 1;
+            ySize = 1;
+        }
     }
     public class Cylinder : StarpointCollider {
         public float radius, ySize;
         public Cylinder() : base() {
-            radius = 0;
-            ySize = 0;
+            radius = 1;
+            ySize = 1;
         }
         public Cylinder(float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, float radius, float ySize) : base(xOffset, yOffset, zOffset, xRot, yRot, zRot) {
             this.radius = radius;
@@ -113,6 +122,9 @@ namespace SOLM {
             radius = copySource.radius;
             ySize = copySource.ySize;
         }
-        public Cylinder(StarpointCollider copySource) : base(copySource) { }
+        public Cylinder(StarpointCollider copySource) : base(copySource) {
+            radius = 1;
+            ySize = 1;
+        }
     }
 }

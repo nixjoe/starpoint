@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:HelixToolkit="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf"
         xmlns:local="clr-namespace:SOLM"
         mc:Ignorable="d"
         Title="System Object Library Manager" Height="500" Width="1000" MinHeight="500" MinWidth="1000">
@@ -55,10 +56,16 @@
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Name:" Margin="5" Height="20"/>
                         <TextBlock Text="Model file:" Margin="5" Height="20"/>
+                        <TextBlock Text="X Scale:" Margin="5" Height="20"/>
+                        <TextBlock Text="Y Scale:" Margin="5" Height="20"/>
+                        <TextBlock Text="Z Scale:" Margin="5" Height="20"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBox Name="tb_object_name" Margin="5" TextChanged="tb_object_name_TextChanged" Height="20"/>
                         <TextBox Name="tb_object_model" Margin="5" TextChanged="tb_object_model_TextChanged" Height="20"/>
+                        <TextBox Name="tb_object_xScale" Margin="5" TextChanged="tb_object_xScale_TextChanged" Height="20"/>
+                        <TextBox Name="tb_object_yScale" Margin="5" TextChanged="tb_object_yScale_TextChanged" Height="20"/>
+                        <TextBox Name="tb_object_zScale" Margin="5" TextChanged="tb_object_zScale_TextChanged" Height="20"/>
                     </StackPanel>
                 </Grid>
 
@@ -261,7 +268,7 @@
                                                 <ComboBox Name="cb_requirement_comparison" Height="22" Margin="5" SelectionChanged="cb_requirement_comparison_SelectionChanged"/>
                                             </DockPanel>
                                             <DockPanel>
-                                                <TextBlock Text="Value:" Name="tb_requirement_valueLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBlock Text="Value*:" Name="tb_requirement_valueLabel" Grid.Column="0" Margin="5" Height="22"/>
                                                 <TextBox Name="tb_requirement_value" MinHeight="22" Margin="5" TextWrapping="WrapWithOverflow" TextChanged="tb_requirement_value_TextChanged"/>
                                             </DockPanel>
                                             <DockPanel>
@@ -445,7 +452,9 @@
                         <DockPanel>
                             <!--insert Helix model viewer here-->
                             <StackPanel>
-                            <Border Width="200" Height="200" DockPanel.Dock="Left" BorderThickness="2" BorderBrush="Gainsboro" CornerRadius="3"/>
+                                <Border Width="200" Height="200" DockPanel.Dock="Left" BorderThickness="2" BorderBrush="Gainsboro" CornerRadius="3">
+                                    <HelixToolkit:HelixViewport3D Name="helixViewport" ModelUpDirection="0,1,0"/>
+                                </Border>
                                 <Button Content="Load Model / Refresh" Name="b_loadModel" Click="b_loadModel_Click"/>
                             </StackPanel>
                             <StackPanel DockPanel.Dock="Right">

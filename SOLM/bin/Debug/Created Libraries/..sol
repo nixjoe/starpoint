@@ -39,27 +39,6 @@
           <lBound>0</lBound>
           <defaultValue>0</defaultValue>
         </Property>
-        <Property xsi:type="EnumProperty">
-          <description />
-          <name>New Property</name>
-          <visible>false</visible>
-          <control>false</control>
-          <enums>
-            <EnumPropertyValue>
-              <name>a</name>
-              <value>0</value>
-            </EnumPropertyValue>
-            <EnumPropertyValue>
-              <name>b</name>
-              <value>1</value>
-            </EnumPropertyValue>
-            <EnumPropertyValue>
-              <name>c</name>
-              <value>2</value>
-            </EnumPropertyValue>
-          </enums>
-          <defaultValue>0</defaultValue>
-        </Property>
       </properties>
       <operations />
       <colliders />
