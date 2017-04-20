@@ -16,6 +16,7 @@ using System.Xml.Serialization;
 using Microsoft.Win32;
 using HelixToolkit.Wpf;
 using System.Windows.Media.Media3D;
+using System.Diagnostics;
 
 namespace SOLM {
     public partial class MainWindow : Window {
@@ -131,7 +132,6 @@ namespace SOLM {
         }
 
         private void UpdateViewport() {
-            //helixViewport.Camera.Transform = new RotateTransform3D(new QuaternionRotation3D(Euler(0, 90, 0)));
             helixViewport.Children.Clear();
             helixViewport.Children.Add(new SunLight());
             GridLinesVisual3D glv = new GridLinesVisual3D();
@@ -141,22 +141,27 @@ namespace SOLM {
             glv.MajorDistance = 1;
             glv.Thickness = 0.01f;
             glv.Normal = new Vector3D(0, 1, 0);
-            //glv.Transform = new RotateTransform3D(new QuaternionRotation3D(Euler(90, 0, 0)));
             helixViewport.Children.Add(glv);
             if (lv_objectList.SelectedItem != null) {
                 StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
+                if (File.Exists(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).fqModel) && !File.Exists(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).GetObjModel())) {
+                    ProcessStartInfo processStartInfo = new ProcessStartInfo();
+                    processStartInfo.CreateNoWindow = true;
+                    processStartInfo.UseShellExecute = false;
+                    processStartInfo.RedirectStandardOutput = false;
+                    processStartInfo.FileName = Environment.CurrentDirectory + @"\FbxConverter.exe";
+                    processStartInfo.Arguments = CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).fqModel + " " + CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).GetObjModel();
+                    processStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    Process FbxConverter = Process.Start(processStartInfo);
+                    FbxConverter.WaitForExit();
+                }
                 if (File.Exists(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).GetObjModel())) {
                     ModelVisual3D mv3d = new ModelVisual3D();
                     mv3d.Content = new GeometryModel3D(LoadFromFile(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).GetObjModel()), new DiffuseMaterial(Brushes.SlateGray));
                     Matrix3D m3d = Matrix3D.Identity;
                     m3d.Scale(new Vector3D(o.xScale, o.yScale, o.zScale));
-                    //m3d.Rotate(Euler(c.xRot, c.yRot, c.zRot));
-                    //m3d.Translate(new Vector3D(c.xOffset, c.yOffset, c.zOffset));
                     mv3d.Transform = new MatrixTransform3D(m3d);
                     helixViewport.Children.Add(mv3d);
-                } else if (File.Exists(CONVERTED_MODELS_PATH + @"\" + (lv_objectList.SelectedItem as StarpointObject).fqModel)) {
-                } else {
-                    
                 }
                 Brush colliderBrush;
                 foreach (StarpointCollider c in (lv_objectList.SelectedItem as StarpointObject).colliders) {
@@ -862,7 +867,7 @@ namespace SOLM {
                 Property p = lv_propertiesList.SelectedItem as Property;
                 switch ((string)cb_property_type.SelectedItem) {
                     case "Container":
-                        if (propertyTypeChange) {
+                        if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new ContainerProperty(p);
                         }
                         tb_property_uBound.Visibility = Visibility.Visible;
@@ -871,7 +876,7 @@ namespace SOLM {
                         tb_property_containerResourceLabel.Visibility = Visibility.Visible;
                         break;
                     case "Integer":
-                        if (propertyTypeChange) {
+                        if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new IntegerProperty(p);
                         }
                         tb_property_uBound.Visibility = Visibility.Visible;
@@ -880,7 +885,7 @@ namespace SOLM {
                         tb_property_lBoundLabel.Visibility = Visibility.Visible;
                         break;
                     case "Real":
-                        if (propertyTypeChange) {
+                        if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new RealProperty(p);
                         }
                         tb_property_uBound.Visibility = Visibility.Visible;
@@ -889,12 +894,15 @@ namespace SOLM {
                         tb_property_lBoundLabel.Visibility = Visibility.Visible;
                         break;
                     case "Enum":
-                        if (propertyTypeChange) {
+                        if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new EnumProperty(p);
                         }
                         tb_property_enumValuesLabel.Visibility = Visibility.Visible;
                         dg_property_enumValues.Visibility = Visibility.Visible;
                         break;
+                }
+                if ((new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
+                    cb_property_type.SelectedIndex = (cb_property_type.ItemsSource as List<string>).IndexOf(p.type.ToString());
                 }
             } else {
                 tb_property_name.Text = "";
