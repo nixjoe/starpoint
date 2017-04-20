@@ -5,7 +5,15 @@
       <name>Resource 1</name>
       <weight>0</weight>
     </StarpointResource>
+    <StarpointResource>
+      <name>Resource 2</name>
+      <weight>2</weight>
+    </StarpointResource>
+    <StarpointResource>
+      <name>Resource 3</name>
+      <weight>343</weight>
+    </StarpointResource>
   </resourceList>
-  <name>fgfg</name>
-  <bundleName>dfg</bundleName>
+  <name>library</name>
+  <bundleName>bundle</bundleName>
 </SRL>
