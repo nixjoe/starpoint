@@ -9,6 +9,7 @@ namespace SOLM {
         public List<StarpointObject> objects;
         public string name { get; set; }
         public string bundle { get; set; }
+        public string version { get; set; }
         public string fqName {
             get {
                 return bundle + "." + name + ".sol";
@@ -16,6 +17,7 @@ namespace SOLM {
         }
         public SOL() {
             objects = new List<StarpointObject>();
+            version = "01.00.00";
         }
     }
 }

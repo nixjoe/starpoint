@@ -42,23 +42,55 @@
       </properties>
       <operations />
       <colliders>
-        <StarpointCollider xsi:type="Sphere">
+        <StarpointCollider xsi:type="Cube">
           <xOffset>0</xOffset>
-          <yOffset>2</yOffset>
+          <yOffset>0</yOffset>
           <zOffset>0</zOffset>
           <xRot>0</xRot>
           <yRot>0</yRot>
-          <zRot>45</zRot>
-          <radius>1.25</radius>
+          <zRot>0</zRot>
+          <xSize>1</xSize>
+          <ySize>1</ySize>
+          <zSize>1</zSize>
+        </StarpointCollider>
+        <StarpointCollider xsi:type="Capsule">
+          <xOffset>0</xOffset>
+          <yOffset>0</yOffset>
+          <zOffset>0</zOffset>
+          <xRot>0</xRot>
+          <yRot>0</yRot>
+          <zRot>0</zRot>
+          <radius>1</radius>
+          <ySize>1</ySize>
+        </StarpointCollider>
+        <StarpointCollider xsi:type="Sphere">
+          <xOffset>0</xOffset>
+          <yOffset>0</yOffset>
+          <zOffset>0</zOffset>
+          <xRot>0</xRot>
+          <yRot>0</yRot>
+          <zRot>0</zRot>
+          <radius>1.4</radius>
+        </StarpointCollider>
+        <StarpointCollider xsi:type="Cylinder">
+          <xOffset>0</xOffset>
+          <yOffset>0</yOffset>
+          <zOffset>0</zOffset>
+          <xRot>0</xRot>
+          <yRot>0</yRot>
+          <zRot>90</zRot>
+          <radius>1</radius>
+          <ySize>1</ySize>
         </StarpointCollider>
       </colliders>
       <name>New Object</name>
-      <xScale>2</xScale>
-      <yScale>2</yScale>
+      <xScale>1</xScale>
+      <yScale>1</yScale>
       <zScale>1</zScale>
-      <model>model.obj</model>
+      <model>cube.fbx</model>
     </StarpointObject>
   </objects>
   <name>library</name>
   <bundle>bundle</bundle>
+  <version>1.1.1</version>
 </SOL>

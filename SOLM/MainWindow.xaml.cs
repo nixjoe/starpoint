@@ -24,13 +24,14 @@ namespace SOLM {
         private bool propertyTypeChange, colliderTypeChange, requirementTypeChange, effectTypeChange;
         private readonly string CREATED_LIBRARY_PATH = Environment.CurrentDirectory + @"\Created Libraries";
         private readonly string CONVERTED_MODELS_PATH = Environment.CurrentDirectory + @"\Models";
+        private bool unsavedChanges;
         public MainWindow() {
             InitializeComponent();
             propertyTypeChange = true;
             colliderTypeChange = true;
             requirementTypeChange = true;
             effectTypeChange = true;
-            //helixViewport.ModelUpDirection = new Vector3D(0, 1, 0);
+
             helixViewport.ShowViewCube = false;
             helixViewport.ShowCoordinateSystem = true;
             helixViewport.CameraMode = CameraMode.Inspect;
@@ -50,6 +51,7 @@ namespace SOLM {
             sol = new SOL();
             lv_objectList.ItemsSource = sol.objects;
             Refresh();
+            unsavedChanges = false;
         }
 
         private void mi_objects_sort_Click(object sender, RoutedEventArgs e) {
@@ -257,8 +259,11 @@ namespace SOLM {
             int lv_collidersList_selectedIndex = lv_collidersList.SelectedIndex;
             int lv_requirementsList_selectedIndex = lv_requirementList.SelectedIndex;
             int lv_effectsList_selectedIndex = lv_effectList.SelectedIndex;
+            bool bufferUnsavedChanges = unsavedChanges;
             tb_libraryName.Text = sol.name;
             tb_bundleName.Text = sol.bundle;
+            tb_version.Text = sol.version;
+            unsavedChanges = bufferUnsavedChanges;
             lv_objectList.Items.Refresh();
             lv_operationsList.Items.Refresh();
             lv_propertiesList.Items.Refresh();
@@ -992,7 +997,7 @@ namespace SOLM {
             }
         }
         private void SanitizeString(TextBox textbox) {
-            textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) select c).ToArray());
+            textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) && c!='.' select c).ToArray());
         }
         private float? SanitizeFloat(TextBox textbox, bool allowNull = false) {
             float value;
@@ -1515,6 +1520,10 @@ namespace SOLM {
                     o.zScale = value.Value;
                 }
             }
+            Refresh();
+        }
+        private void tb_version_TextChanged(object sender, TextChangedEventArgs e) {
+            sol.version = tb_version.Text;
             Refresh();
         }
         private void tb_effect_yAngVelocity_TextChanged(object sender, TextChangedEventArgs e) {

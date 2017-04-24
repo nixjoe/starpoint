@@ -18,6 +18,8 @@
             <TextBox Name="tb_bundleName" MinWidth="100" TextChanged="tb_bundleName_TextChanged"/>
             <TextBlock Text="Library: "/>
             <TextBox Name="tb_libraryName" MinWidth="100" TextChanged="tb_libraryName_TextChanged"/>
+            <TextBlock Text="Version: "/>
+            <TextBox Name="tb_libraryVersion" MinWidth="100" TextChanged="tb_libraryVersion_TextChanged"/>
         </StackPanel>
         <DockPanel Name="dp_resourceView" DockPanel.Dock="Left" Width="200" Margin="5">
             <Menu DockPanel.Dock="Bottom" Height="20">

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 
@@ -24,16 +24,17 @@ namespace SRLM {
         public SRL library { get; set; }
 
         public MainWindow() {
-            hasChangedSinceSave = false;
             InitializeComponent();
             DataContext = this;
+            library = new SRL();
             Update();
+            ClearUnsavedFlag();
         }
 
         public void Update() {
-
             tb_libraryName.IsEnabled = library != null;
             tb_bundleName.IsEnabled = library != null;
+            tb_libraryVersion.IsEnabled = library != null;
             lv_resourceList.IsEnabled = library != null;
             mi_libraryView_delete.IsEnabled = library != null;
             mi_libraryView_new.IsEnabled = library != null;
@@ -42,6 +43,10 @@ namespace SRLM {
             tb_resourceName.IsEnabled = lv_resourceList.SelectedItem != null;
             tb_resourceWeight.IsEnabled = lv_resourceList.SelectedItem != null;
             if (library != null) {
+                tb_libraryVersion.Text = library.version;
+                tb_bundleName.Text = library.bundleName;
+                tb_libraryName.Text = library.name;
+
                 Title = "Starpoint Resource Library Manager - " + library.bundleName + "." + library.name + ".srl";
                 if (hasChangedSinceSave) {
                     Title += "*";
@@ -87,6 +92,14 @@ namespace SRLM {
             hasChangedSinceSave = false;
             library = new SRL();
             Update();
+            ClearUnsavedFlag();
+        }
+
+        private void ClearUnsavedFlag() {
+            hasChangedSinceSave = false;
+            if (Title.Last() == '*') {
+                Title = Title.Substring(0, Title.Length - 1);
+            }
         }
 
         private void mi_saveLibrary_Click(object sender, RoutedEventArgs e) {
@@ -114,14 +127,16 @@ namespace SRLM {
             dialog.CheckFileExists = true;
             if (dialog.ShowDialog() == true) {
                 library = SRL.Load(dialog.FileName);
-                hasChangedSinceSave = false;
                 Update();
+                ClearUnsavedFlag();
             }
             
         }
 
         private void tb_libraryName_TextChanged(object sender, TextChangedEventArgs e) {
             if (library != null) {
+                hasChangedSinceSave = true;
+                SanitizeString(tb_libraryName);
                 library.name = tb_libraryName.Text;
             }
             Update();
@@ -129,12 +144,15 @@ namespace SRLM {
 
         private void tb_bundleName_TextChanged(object sender, TextChangedEventArgs e) {
             if (library != null) {
+                SanitizeString(tb_bundleName);
                 library.bundleName = tb_bundleName.Text;
                 hasChangedSinceSave = true;
             }
             Update();
         }
-
+        private void SanitizeString(TextBox textbox) {
+            textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) && c != '.' select c).ToArray());
+        }
         private void lv_resourceList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_resourceList.SelectedIndex >= 0) {
                 tb_resourceName.IsEnabled = true;
@@ -193,6 +211,14 @@ namespace SRLM {
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void tb_libraryVersion_TextChanged(object sender, TextChangedEventArgs e) {
+            if (library != null) {
+                hasChangedSinceSave = true;
+                library.version = tb_libraryVersion.Text;
+            }
+            Update();
         }
     }
 }
