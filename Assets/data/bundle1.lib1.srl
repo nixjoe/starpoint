@@ -3,17 +3,18 @@
   <resourceList>
     <StarpointResource>
       <name>Resource 1</name>
-      <weight>0</weight>
+      <weight>12</weight>
     </StarpointResource>
     <StarpointResource>
       <name>Resource 2</name>
-      <weight>2</weight>
+      <weight>2.22224</weight>
     </StarpointResource>
     <StarpointResource>
       <name>Resource 3</name>
-      <weight>343</weight>
+      <weight>2344</weight>
     </StarpointResource>
   </resourceList>
-  <name>library</name>
-  <bundleName>bundle</bundleName>
+  <name>lib1</name>
+  <bundleName>bundle1</bundleName>
+  <version>01.00.00</version>
 </SRL>

@@ -33,7 +33,9 @@ public class ResourceManager : MonoBehaviour {
                         string l = f.Split('.')[1];
                         if (!libraries.Exists(s => s.bundleName == b && s.name == l)) {
                             Debug.Log("Loading " + f);
-                            libraries.Add(SRL.Load(fse));
+                            SRL srl = SRL.Load(fse);
+                            Debug.Log(fse + " version " + srl.version);
+                            libraries.Add(srl);
                         } else {
                             Debug.LogError("An SRL with the name " + f + " has already been loaded! >:(");
                         }

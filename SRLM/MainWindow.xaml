@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:SRLM"
         mc:Ignorable="d"
         Closing="Window_Closing"
+        Icon="srlm.ico"
         Title="Starpoint Resource Library Manager" Height="234.424" Width="278.583" MinHeight="350" MinWidth="525">
     <DockPanel>
         <Menu DockPanel.Dock="Top" Height="20">

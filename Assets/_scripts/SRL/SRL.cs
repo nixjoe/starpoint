@@ -9,16 +9,20 @@ using System.IO;
 public class SRL {
     public string name { get; set; }
     public string bundleName { get; set; }
+    public string version { get; set; }
+
     public List<StarpointResource> resourceList;
     public SRL() {
         name = "";
         bundleName = "";
+        version = "";
         resourceList = new List<StarpointResource>();
     }
 
-    public SRL(string name, string bundleName) {
+    public SRL(string name, string bundleName, string version) {
         this.name = name;
         this.bundleName = bundleName;
+        this.version = version;
         resourceList = new List<StarpointResource>();
     }
     public void AddResource(StarpointResource resource) {

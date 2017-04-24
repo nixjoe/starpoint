@@ -36,3 +36,5 @@ builds/
 /SRLM/obj
 !/SOLM/
 /SOLM/obj
+
+SRLM/bin/Debug/Created Libraries/
