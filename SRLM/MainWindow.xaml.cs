@@ -44,14 +44,14 @@ namespace SRLM {
             tb_resourceWeight.IsEnabled = lv_resourceList.SelectedItem != null;
             if (library != null) {
                 tb_libraryVersion.Text = library.version;
-                tb_bundleName.Text = library.bundleName;
+                tb_bundleName.Text = library.bundle;
                 tb_libraryName.Text = library.name;
 
-                Title = "Starpoint Resource Library Manager - " + library.bundleName + "." + library.name + ".srl";
+                Title = "Starpoint Resource Library Manager - " + library.bundle + "." + library.name + ".srl";
                 if (hasChangedSinceSave) {
                     Title += "*";
                 }
-                lv_resourceList.ItemsSource = library.resourceList;
+                lv_resourceList.ItemsSource = library.resources;
                 lv_resourceList.Items.Refresh();
             } else {
                 Title = "Starpoint Resource Library Manager";
@@ -61,7 +61,7 @@ namespace SRLM {
 
         private void mi_libraryView_new_Click(object sender, RoutedEventArgs e) {
             hasChangedSinceSave = true;
-            string name = "Resource " + (library.resourceList.Count + 1);
+            string name = "Resource " + (library.resources.Count + 1);
             library.AddResource(new StarpointResource(name, 0.0f));
             Update();
         }
@@ -78,7 +78,7 @@ namespace SRLM {
         private void mi_libraryView_delete_Click(object sender, RoutedEventArgs e) {
             if (lv_resourceList.SelectedIndex >= 0) {
                 hasChangedSinceSave = true;
-                library.resourceList.Remove(lv_resourceList.SelectedItem as StarpointResource);
+                library.resources.Remove(lv_resourceList.SelectedItem as StarpointResource);
             }
             Update();
         }
@@ -103,7 +103,7 @@ namespace SRLM {
         }
 
         private void mi_saveLibrary_Click(object sender, RoutedEventArgs e) {
-            if ((from StarpointResource s in library.resourceList select s.name).Count() != (from StarpointResource s in library.resourceList select s.name).Distinct().Count()) {
+            if ((from StarpointResource s in library.resources select s.name).Count() != (from StarpointResource s in library.resources select s.name).Distinct().Count()) {
                 MessageBox.Show("All Resources must have unique names!");
             } else {
                 try {
@@ -145,7 +145,7 @@ namespace SRLM {
         private void tb_bundleName_TextChanged(object sender, TextChangedEventArgs e) {
             if (library != null) {
                 SanitizeString(tb_bundleName);
-                library.bundleName = tb_bundleName.Text;
+                library.bundle = tb_bundleName.Text;
                 hasChangedSinceSave = true;
             }
             Update();
@@ -192,7 +192,7 @@ namespace SRLM {
         }
 
         private void mi_libraryView_sort_Click(object sender, RoutedEventArgs e) {
-            library.resourceList.Sort(delegate(StarpointResource x, StarpointResource y) {
+            library.resources.Sort(delegate(StarpointResource x, StarpointResource y) {
                 if (x.name == null && y.name == null)
                     return 0;
                 else if (x.name == null)

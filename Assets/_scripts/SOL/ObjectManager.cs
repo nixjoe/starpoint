@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-public class ResourceManager : MonoBehaviour {
-    public static ResourceManager instance;
+public class ObjectManager : MonoBehaviour {
+    public static ObjectManager instance;
     public static string srlPath;
-    public List<SRL> libraries;
+    public List<SOL> libraries;
 
-	void Start () {
+    void Start() {
         if (instance == null) {
             srlPath = Path.Combine(Application.dataPath, "data");
             DontDestroyOnLoad(gameObject);
             instance = this;
-            libraries = new List<SRL>();
+            libraries = new List<SOL>();
             LoadSrls(srlPath);
-            Debug.Log("Finished loading resource libraries.");
+            Debug.Log("Finished loading object libraries.");
         } else {
-            Debug.LogError("Trying to instantiate more than one ResourceManager! Sad!");
+            Debug.LogError("Trying to instantiate more than one ObjectManager! Sad!");
         }
     }
 
@@ -26,18 +26,18 @@ public class ResourceManager : MonoBehaviour {
             if (Directory.Exists(fse)) {
                 LoadSrls(fse);
             } else {
-                if (Path.GetExtension(fse) == ".srl") {
+                if (Path.GetExtension(fse) == ".sol") {
                     try {
                         string f = Path.GetFileName(fse);
                         string b = f.Split('.')[0];
                         string l = f.Split('.')[1];
                         if (!libraries.Exists(s => s.bundle == b && s.name == l)) {
                             Debug.Log("Loading " + f);
-                            SRL srl = SRL.Load(fse);
-                            Debug.Log(fse + " version " + srl.version);
-                            libraries.Add(srl);
+                            SOL sol = SOL.Load(fse);
+                            Debug.Log(fse + " version " + sol.version);
+                            libraries.Add(sol);
                         } else {
-                            Debug.LogError("An SRL with the name " + f + " has already been loaded! >:(");
+                            Debug.LogError("An SOL with the name " + f + " has already been loaded! >:(");
                         }
                     } catch (Exception e) {
                         Debug.LogError("Failed to load " + Path.GetFileName(fse));
@@ -51,19 +51,19 @@ public class ResourceManager : MonoBehaviour {
         }
     }
 
-    public StarpointResource Find(string name) {
+    public StarpointObject Find(string name) {
         string bundle = name.Split('.')[0];
         string library = name.Split('.')[1];
-        string resource = name.Split('.')[2];
+        string obj = name.Split('.')[2];
         if (libraries.Exists(s => s.bundle == bundle && s.name == library)) {
-            SRL srl = libraries.Find(s => s.bundle == bundle && s.name == library);
-            if (srl.resources.Exists(r => r.name == resource)) {
-                return srl.resources.Find(r => r.name == resource);
+            SOL sol = libraries.Find(s => s.bundle == bundle && s.name == library);
+            if (sol.objects.Exists(o => o.name == obj)) {
+                return sol.objects.Find(o => o.name == obj);
             } else {
-                Debug.LogError(bundle + "." + library + " doesn't contain a resource by that name! Offending resource: " + name);
+                Debug.LogError(bundle + "." + library + " doesn't contain an object by that name! Offending object: " + name);
             }
         } else {
-            Debug.LogError("Couldn't find <bundle>.<library> " + bundle + "." + library + " in loaded SRLs! Offending resource: " + name);
+            Debug.LogError("Couldn't find <bundle>.<library> " + bundle + "." + library + " in loaded SOLs! Offending object: " + name);
         }
         return null;
     }

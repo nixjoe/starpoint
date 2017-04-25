@@ -9,24 +9,26 @@ using System.IO;
 namespace SRLM {
     public class SRL {
         public string name { get; set; }
-        public string bundleName { get; set; }
+        public string bundle { get; set; }
         public string version { get; set; }
-        public List<StarpointResource> resourceList;
+        public List<StarpointResource> resources;
+        
         public SRL() {
             name = "";
-            bundleName = "";
+            bundle = "";
             version = "01.00.00";
-            resourceList = new List<StarpointResource>();
+            resources = new List<StarpointResource>();
         }
 
         public SRL(string name, string bundleName, string version) {
             this.name = name;
-            this.bundleName = bundleName;
+            this.bundle = bundleName;
             this.version = version;
-            resourceList = new List<StarpointResource>();
+            resources = new List<StarpointResource>();
         }
         public void AddResource(StarpointResource resource) {
-            resourceList.Add(resource);
+            resources.Add(resource);
+            resource.library = this;
         }
         public static SRL Load(string filepath) {
             if (File.Exists(filepath)) {
@@ -43,7 +45,7 @@ namespace SRLM {
             }
             Directory.CreateDirectory(destination);
             XmlSerializer serializer = new XmlSerializer(typeof(SRL));
-            string savePath = Path.Combine(destination, string.Join(".", bundleName, name, "srl"));
+            string savePath = Path.Combine(destination, string.Join(".", bundle, name, "srl"));
             if (File.Exists(savePath)) {
                 File.Delete(savePath);
             }

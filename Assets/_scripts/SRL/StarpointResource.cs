@@ -9,7 +9,7 @@ public class StarpointResource {
     public SRL srl { get; set; }
     public string fqName {
         get {
-            return srl.bundleName + '.' + srl.name + '.' + name;
+            return srl.bundle + '.' + srl.name + '.' + name;
         }
     }
     public StarpointResource() {
