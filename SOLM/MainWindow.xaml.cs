@@ -17,6 +17,7 @@ using Microsoft.Win32;
 using HelixToolkit.Wpf;
 using System.Windows.Media.Media3D;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace SOLM {
     public partial class MainWindow : Window {
@@ -50,8 +51,16 @@ namespace SOLM {
             Directory.CreateDirectory(CONVERTED_MODELS_PATH);
             sol = new SOL();
             lv_objectList.ItemsSource = sol.objects;
+            ClearUnsavedFlag();
             Refresh();
-            unsavedChanges = false;
+        }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e) {
+            if (unsavedChanges) {
+                if (MessageBox.Show("There are unsaved changes in the library! Are you sure you want to quit?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) {
+                    e.Cancel = true;
+                }
+            }
         }
 
         private void mi_objects_sort_Click(object sender, RoutedEventArgs e) {
@@ -61,6 +70,7 @@ namespace SOLM {
 
         }
         private void lv_effectList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             if (lv_effectList.SelectedItem != null) {
                 Effect ef = lv_effectList.SelectedItem as Effect;
                 requirementTypeChange = false;
@@ -116,6 +126,8 @@ namespace SOLM {
                 }
                 requirementTypeChange = true;
             }
+            unsavedChanges = unsavedChangesBuffer;
+            Refresh();
         }
         private void mi_effects_sort_Click(object sender, RoutedEventArgs e) {
 
@@ -130,9 +142,16 @@ namespace SOLM {
 
         }
         private void b_loadModel_Click(object sender, RoutedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             UpdateViewport();
+            unsavedChanges = unsavedChangesBuffer;
         }
-
+        private void ClearUnsavedFlag() {
+            unsavedChanges = false;
+            if (Title.Last() == '*') {
+                Title = Title.Substring(0, Title.Length - 1);
+            }
+        }
         private void UpdateViewport() {
             helixViewport.Children.Clear();
             helixViewport.Children.Add(new SunLight());
@@ -255,6 +274,7 @@ namespace SOLM {
 
         }
         private void Refresh() {
+            bool unsavedChangesBuffer = unsavedChanges;
             int lv_propertiesList_selectedIndex = lv_propertiesList.SelectedIndex;
             int lv_collidersList_selectedIndex = lv_collidersList.SelectedIndex;
             int lv_requirementsList_selectedIndex = lv_requirementList.SelectedIndex;
@@ -283,29 +303,45 @@ namespace SOLM {
                 lv_effectList.SelectedIndex = lv_effectsList_selectedIndex;
             }
             UpdateViewport();
+            unsavedChanges = unsavedChangesBuffer;
+            if (sol != null) {
+                Title = "Starpoint Object Library Manager - " + sol.bundle + "." + sol.name + ".sol";
+            }
+            if (unsavedChanges) {
+                Title += "*";
+            }
         }
         private void NewItem(ListView listView) {
             if (listView == lv_objectList && listView.ItemsSource != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<StarpointObject>).Add(new StarpointObject(sol));
             } else if (listView == lv_operationsList && listView.ItemsSource != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<Operation>).Add(new Operation());
             } else if (listView == lv_propertiesList && listView.ItemsSource != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<Property>).Add(new ContainerProperty());
             } else if (listView == lv_requirementList && listView.ItemsSource != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<Requirement>).Add(new ResourceRequirement());
             } else if (listView == lv_effectList && listView.ItemsSource != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<Effect>).Add(new PropertyEffect());
             } else if (listView == lv_collidersList && listView.ItemsSource != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<StarpointCollider>).Add(new Cube());
             }
             Refresh();
         }
         private void CopyItem(ListView listView) {
             if (listView == lv_objectList && lv_objectList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 (lv_objectList.ItemsSource as List<StarpointObject>).Add(new StarpointObject(lv_objectList.SelectedItem as StarpointObject));
             } else if (listView == lv_operationsList && lv_operationsList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 (lv_operationsList.ItemsSource as List<Operation>).Add(new Operation(lv_operationsList.SelectedItem as Operation));
             } else if (listView == lv_propertiesList && lv_propertiesList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 Property p = lv_propertiesList.SelectedItem as Property;
                 if (p is ContainerProperty) {
                     (lv_propertiesList.ItemsSource as List<Property>).Add(new ContainerProperty(p as ContainerProperty));
@@ -317,6 +353,7 @@ namespace SOLM {
                     (lv_propertiesList.ItemsSource as List<Property>).Add(new EnumProperty(p as EnumProperty));
                 }
             } else if (listView == lv_requirementList && lv_requirementList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 Requirement r = lv_requirementList.SelectedItem as Requirement;
                 if (r is ResourceRequirement) {
                     (lv_requirementList.ItemsSource as List<Requirement>).Add(new ResourceRequirement(lv_requirementList.SelectedItem as ResourceRequirement));
@@ -324,6 +361,7 @@ namespace SOLM {
                     (lv_requirementList.ItemsSource as List<Requirement>).Add(new PropertyRequirement(lv_requirementList.SelectedItem as PropertyRequirement));
                 }
             } else if (listView == lv_effectList && lv_effectList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 Effect ef = lv_effectList.SelectedItem as Effect;
                 if (ef is PropertyEffect) {
                     (lv_effectList.ItemsSource as List<Effect>).Add(new PropertyEffect(lv_effectList.SelectedItem as PropertyEffect));
@@ -339,6 +377,7 @@ namespace SOLM {
                     (lv_effectList.ItemsSource as List<Effect>).Add(new ObjectEffect(lv_effectList.SelectedItem as ObjectEffect));
                 }
             } else if (listView == lv_collidersList && lv_collidersList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 StarpointCollider sc = lv_collidersList.SelectedItem as StarpointCollider;
                 if (sc is Cube) {
                     (lv_collidersList.ItemsSource as List<StarpointCollider>).Add(new Cube(sc as Cube));
@@ -354,16 +393,23 @@ namespace SOLM {
         }
         private void DeleteItem(ListView listView) {
             if (listView == lv_objectList && listView.SelectedItem != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<StarpointObject>).RemoveAt(listView.SelectedIndex);
+                unsavedChanges = true;
             } else if (listView == lv_operationsList && listView.SelectedItem != null) {
                 (listView.ItemsSource as List<Operation>).RemoveAt(listView.SelectedIndex);
+                unsavedChanges = true;
             } else if (listView == lv_propertiesList && listView.SelectedItem != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<Property>).RemoveAt(listView.SelectedIndex);
             } else if (listView == lv_requirementList && listView.SelectedItem != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<Requirement>).RemoveAt(listView.SelectedIndex);
             } else if (listView == lv_effectList && listView.SelectedItem != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<Effect>).RemoveAt(listView.SelectedIndex);
             } else if (listView == lv_collidersList && listView.SelectedItem != null) {
+                unsavedChanges = true;
                 (listView.ItemsSource as List<StarpointCollider>).RemoveAt(listView.SelectedIndex);
             }
             Refresh();
@@ -371,6 +417,7 @@ namespace SOLM {
         private void tb_bundleName_TextChanged(object sender, TextChangedEventArgs e) {
             SanitizeString(tb_bundleName);
             sol.bundle = tb_bundleName.Text;
+            unsavedChanges = true;
             StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
             if (so != null) {
                 if (File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).GetObjModel()) || File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).fqModel)) {
@@ -379,10 +426,12 @@ namespace SOLM {
                     tb_object_model.Background = Brushes.Red;
                 }
             }
+            Refresh();
         }
         private void tb_libraryName_TextChanged(object sender, TextChangedEventArgs e) {
             SanitizeString(tb_libraryName);
             sol.name = tb_libraryName.Text;
+            unsavedChanges = true;
             StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
             if (so != null) {
                 if (File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).GetObjModel()) || File.Exists(CONVERTED_MODELS_PATH + '\\' + (lv_objectList.SelectedItem as StarpointObject).fqModel)) {
@@ -391,6 +440,7 @@ namespace SOLM {
                     tb_object_model.Background = Brushes.Red;
                 }
             }
+            Refresh();
         }
         private void mi_colliders_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_collidersList);
@@ -427,6 +477,7 @@ namespace SOLM {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 if ((string)cb_collider_shape.SelectedItem == "Cube") {
                     if (colliderTypeChange) {
+                        unsavedChanges = true;
                         (lv_collidersList.ItemsSource as List<StarpointCollider>)[lv_collidersList.SelectedIndex] = new Cube(c);
                     }
                     tb_collider_xSizeLabel.Visibility = Visibility.Visible;
@@ -437,6 +488,7 @@ namespace SOLM {
                     tb_collider_zSize.Visibility = Visibility.Visible;
                 } else if ((string)cb_collider_shape.SelectedItem == "Sphere") {
                     if (colliderTypeChange) {
+                        unsavedChanges = true;
                         (lv_collidersList.ItemsSource as List<StarpointCollider>)[lv_collidersList.SelectedIndex] = new Sphere(c);
                     }
                     tb_collider_radius.Visibility = Visibility.Visible;
@@ -444,6 +496,7 @@ namespace SOLM {
                 }
                 if ((string)cb_collider_shape.SelectedItem == "Capsule") {
                     if (colliderTypeChange) {
+                        unsavedChanges = true;
                         (lv_collidersList.ItemsSource as List<StarpointCollider>)[lv_collidersList.SelectedIndex] = new Capsule(c);
                     }
                     tb_collider_radius.Visibility = Visibility.Visible;
@@ -453,6 +506,7 @@ namespace SOLM {
                 }
                 if ((string)cb_collider_shape.SelectedItem == "Cylinder") {
                     if (colliderTypeChange) {
+                        unsavedChanges = true;
                         (lv_collidersList.ItemsSource as List<StarpointCollider>)[lv_collidersList.SelectedIndex] = new Cylinder(c);
                     }
                     tb_collider_radius.Visibility = Visibility.Visible;
@@ -525,6 +579,7 @@ namespace SOLM {
                 switch ((string)cb_effect_type.SelectedItem) {
                     case "Property":
                         if (effectTypeChange) {
+                            unsavedChanges = true;
                             (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new PropertyEffect(ef);
                         }
                         tb_effect_propertyLabel.Visibility = Visibility.Visible;
@@ -536,6 +591,7 @@ namespace SOLM {
                         break;
                     case "Resource":
                         if (effectTypeChange) {
+                            unsavedChanges = true;
                             (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new ResourceEffect(ef);
                         }
                         tb_effect_resourceLabel.Visibility = Visibility.Visible;
@@ -547,6 +603,7 @@ namespace SOLM {
                         break;
                     case "Physical":
                         if (effectTypeChange) {
+                            unsavedChanges = true;
                             (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new PhysicalEffect(ef);
                         }
                         tb_effect_physicalTypeLabel.Visibility = Visibility.Visible;
@@ -566,6 +623,7 @@ namespace SOLM {
                         break;
                     case "Audio":
                         if (effectTypeChange) {
+                            unsavedChanges = true;
                             (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new AudioEffect(ef);
                         }
                         tb_effect_audioClipLabel.Visibility = Visibility.Visible;
@@ -575,6 +633,7 @@ namespace SOLM {
                         break;
                     case "Visual":
                         if (effectTypeChange) {
+                            unsavedChanges = true;
                             (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new VisualEffect(ef);
                         }
                         tb_effect_visualLabel.Visibility = Visibility.Visible;
@@ -594,6 +653,7 @@ namespace SOLM {
                         break;
                     case "Object":
                         if (effectTypeChange) {
+                            unsavedChanges = true;
                             (lv_effectList.ItemsSource as List<Effect>)[lv_effectList.SelectedIndex] = new ObjectEffect(ef);
                         }
                         tb_effect_object.Visibility = Visibility.Visible;
@@ -623,6 +683,7 @@ namespace SOLM {
         }
         private void lv_operationsList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_operationsList.SelectedItem != null) {
+                bool unsavedChangesBuffer = unsavedChanges;
                 Operation o = lv_operationsList.SelectedItem as Operation;
                 tb_operationName.Text = o.name;
                 cb_operation_actionType.SelectedIndex = (cb_operation_actionType.ItemsSource as List<string>).IndexOf(o.action);
@@ -631,11 +692,13 @@ namespace SOLM {
                 tb_operationDescription.Text = o.description;
                 lv_requirementList.ItemsSource = o.requirements;
                 lv_effectList.ItemsSource = o.effects;
+                unsavedChanges = unsavedChangesBuffer;
                 Refresh();
             }
         }
         private void cb_operation_actionType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_operationsList.SelectedItem != null) {
+                unsavedChanges = true;
                 Operation o = lv_operationsList.SelectedItem as Operation;
                 if ((string)cb_operation_actionType.SelectedItem == "Continuous") {
                     cb_operation_trigger.ItemsSource = new List<string>(new string[] { "Auto", "Passive" });
@@ -661,6 +724,7 @@ namespace SOLM {
             if (lv_operationsList.SelectedItem != null) {
                 Operation o = lv_operationsList.SelectedItem as Operation;
                 o.name = tb_operationName.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -668,6 +732,7 @@ namespace SOLM {
             if (lv_operationsList.SelectedItem != null && cb_operation_trigger.SelectedItem != null) {
                 Operation o = lv_operationsList.SelectedItem as Operation;
                 o.trigger = cb_operation_trigger.SelectedItem.ToString();
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -675,23 +740,31 @@ namespace SOLM {
             if (lv_operationsList.SelectedIndex != -1) {
                 Operation o = lv_operationsList.SelectedItem as Operation;
                 o.cooldown = tb_operationCooldown.Text;
+                unsavedChanges = true;
             }
         }
         private void tb_operationDescription_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_operationsList.SelectedItem != null) {
                 Operation o = lv_operationsList.SelectedItem as Operation;
+                unsavedChanges = true;
                 o.description = tb_operationDescription.Text;
                 Refresh();
             }
         }
         private void tc_object_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             tc_opProp.SelectedIndex = tc_object.SelectedIndex;
+            unsavedChanges = unsavedChangesBuffer;
         }
         private void tc_operation_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             tc_reqEff.SelectedIndex = tc_operation.SelectedIndex;
+            unsavedChanges = unsavedChangesBuffer;
         }
         private void tc_reqEff_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             tc_operation.SelectedIndex = tc_reqEff.SelectedIndex;
+            unsavedChanges = unsavedChangesBuffer;
         }
         private void mi_requirements_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_requirementList);
@@ -703,7 +776,9 @@ namespace SOLM {
             DeleteItem(lv_requirementList);
         }
         private void tc_opProp_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             tc_object.SelectedIndex = tc_opProp.SelectedIndex;
+            unsavedChanges = unsavedChangesBuffer;
         }
         private void mi_effects_new_Click(object sender, RoutedEventArgs e) {
             NewItem(lv_effectList);
@@ -724,6 +799,7 @@ namespace SOLM {
                 switch ((string)cb_requirement_type.SelectedItem) {
                     case "Resource":
                         if (requirementTypeChange) {
+                            unsavedChanges = true;
                             (lv_requirementList.ItemsSource as List<Requirement>)[lv_requirementList.SelectedIndex] = new ResourceRequirement(r);
                         }
                         tb_requirement_resource.Visibility = Visibility.Visible;
@@ -731,6 +807,7 @@ namespace SOLM {
                         break;
                     case "Property":
                         if (requirementTypeChange) {
+                            unsavedChanges = true;
                             (lv_requirementList.ItemsSource as List<Requirement>)[lv_requirementList.SelectedIndex] = new PropertyRequirement(r);
                         }
                         cb_requirement_property.Visibility = Visibility.Visible;
@@ -753,6 +830,7 @@ namespace SOLM {
             DeleteItem(lv_operationsList);
         }
         private void lv_objectList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             if (lv_objectList.SelectedIndex != -1) {
                 StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
                 tb_object_name.Text = so.name;
@@ -763,7 +841,7 @@ namespace SOLM {
                 tb_object_xScale.Text = so.xScale.ToString();
                 tb_object_yScale.Text = so.yScale.ToString();
                 tb_object_zScale.Text = so.zScale.ToString();
-                Refresh();
+                
             } else {
                 tb_object_name.Text = "";
                 tb_object_model.Text = "";
@@ -774,19 +852,23 @@ namespace SOLM {
                 lv_propertiesList.ItemsSource = null;
                 lv_operationsList.ItemsSource = null;
             }
+            unsavedChanges = unsavedChangesBuffer;
+            Refresh();
         }
         private void tb_object_name_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_objectList.SelectedItem != null) {
                 StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
                 so.name = tb_object_name.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
         private void tb_object_model_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_objectList.SelectedIndex != -1) {
                 StarpointObject so = lv_objectList.SelectedItem as StarpointObject;
-                SanitizeString(tb_object_model);
+                SanitizeString(tb_object_model, true);
                 so.model = tb_object_model.Text;
+                unsavedChanges = true;
                 if (File.Exists(CONVERTED_MODELS_PATH + '\\' + so.GetObjModel()) || File.Exists(CONVERTED_MODELS_PATH + '\\' + so.fqModel)) {
                     tb_object_model.Background = Brushes.White;
                 } else {
@@ -805,6 +887,7 @@ namespace SOLM {
             DeleteItem(lv_objectList);
         }
         private void lv_propertiesList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             if (lv_propertiesList.SelectedItem != null) {
                 Property p = lv_propertiesList.SelectedItem as Property;
                 tb_property_name.Text = p.name;
@@ -843,13 +926,17 @@ namespace SOLM {
                 propertyTypeChange = true;
                 tb_property_description.Text = p.description;
                 cb_property_visible.IsChecked = p.visible;
+                cb_property_control.IsChecked = p.control;
             }
+            unsavedChanges = unsavedChangesBuffer;
+            Refresh();
         }
         private void tb_property_name_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_propertiesList.SelectedItem != null) {
                 Property p = lv_propertiesList.SelectedItem as Property;
                 if (!(new string[] { "hp", "armor", "max temperature", "mass" }.Contains(tb_property_name.Text))) {
                     p.name = tb_property_name.Text;
+                    unsavedChanges = true;
                     tb_property_name.Background = Brushes.White;
                 } else if (p.name != tb_property_name.Text) {
                     tb_property_name.Background = Brushes.Red;
@@ -873,6 +960,7 @@ namespace SOLM {
                 switch ((string)cb_property_type.SelectedItem) {
                     case "Container":
                         if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
+                            unsavedChanges = true;
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new ContainerProperty(p);
                         }
                         tb_property_uBound.Visibility = Visibility.Visible;
@@ -882,6 +970,7 @@ namespace SOLM {
                         break;
                     case "Integer":
                         if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
+                            unsavedChanges = true;
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new IntegerProperty(p);
                         }
                         tb_property_uBound.Visibility = Visibility.Visible;
@@ -891,6 +980,7 @@ namespace SOLM {
                         break;
                     case "Real":
                         if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
+                            unsavedChanges = true;
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new RealProperty(p);
                         }
                         tb_property_uBound.Visibility = Visibility.Visible;
@@ -900,6 +990,7 @@ namespace SOLM {
                         break;
                     case "Enum":
                         if (propertyTypeChange && !(new string[] { "hp", "armor", "max temperature", "mass" }).Contains(p.name)) {
+                            unsavedChanges = true;
                             (lv_propertiesList.ItemsSource as List<Property>)[lv_propertiesList.SelectedIndex] = new EnumProperty(p);
                         }
                         tb_property_enumValuesLabel.Visibility = Visibility.Visible;
@@ -919,6 +1010,7 @@ namespace SOLM {
         }
         private void tb_property_description_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_propertiesList.SelectedItem != null) {
+                unsavedChanges = true;
                 Property p = lv_propertiesList.SelectedItem as Property;
                 p.description = tb_property_description.Text;
                 Refresh();
@@ -926,6 +1018,7 @@ namespace SOLM {
         }
         private void cb_property_visible_Checked(object sender, RoutedEventArgs e) {
             if (lv_propertiesList.SelectedItem != null) {
+                unsavedChanges = true;
                 Property p = lv_propertiesList.SelectedItem as Property;
                 p.visible = (bool)cb_property_visible.IsChecked;
                 Refresh();
@@ -938,6 +1031,7 @@ namespace SOLM {
                 int? iValue;
                 if (p is ContainerProperty) {
                     fValue = SanitizeFloat(tb_property_uBound, true);
+                    unsavedChanges = true;
                     (p as ContainerProperty).uBound = fValue;
                 }
                 if (p is RealProperty) {
@@ -948,6 +1042,7 @@ namespace SOLM {
                             tb_property_uBound.Text = fValue.ToString();
                         }
                     }
+                    unsavedChanges = true;
                     (p as RealProperty).uBound = fValue;
                 }
                 if (p is IntegerProperty) {
@@ -958,9 +1053,11 @@ namespace SOLM {
                             tb_property_uBound.Text = iValue.ToString();
                         }
                     }
+                    unsavedChanges = true;
                     (p as IntegerProperty).uBound = iValue;
                 }
             }
+            Refresh();
         }
         private void tb_property_lBound_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_propertiesList.SelectedIndex != -1) {
@@ -975,6 +1072,7 @@ namespace SOLM {
                             tb_property_lBound.Text = fValue.ToString();
                         }
                     }
+                    unsavedChanges = true;
                     (p as RealProperty).lBound = fValue;
                 }
                 if (p is IntegerProperty) {
@@ -985,19 +1083,26 @@ namespace SOLM {
                             tb_property_lBound.Text = iValue.ToString();
                         }
                     }
+                    unsavedChanges = true;
                     (p as IntegerProperty).lBound = iValue;
                 }
             }
+            Refresh();
         }
         private void tb_property_containerResource_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_propertiesList.SelectedItem != null && lv_propertiesList.SelectedItem is ContainerProperty) {
                 ContainerProperty cp = lv_propertiesList.SelectedItem as ContainerProperty;
                 cp.resource = tb_property_containerResource.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
-        private void SanitizeString(TextBox textbox) {
-            textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) && c!='.' select c).ToArray());
+        private void SanitizeString(TextBox textbox, bool allowPeriods = false) {
+            if (allowPeriods) {
+                textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) select c).ToArray());
+            } else {
+                textbox.Text = new string((from c in textbox.Text where !Path.GetInvalidFileNameChars().Contains(c) && c != '.' select c).ToArray());
+            }
         }
         private float? SanitizeFloat(TextBox textbox, bool allowNull = false) {
             float value;
@@ -1029,7 +1134,13 @@ namespace SOLM {
             }
         }
         private void mi_newLibrary_Click(object sender, RoutedEventArgs e) {
+            if (unsavedChanges) {
+                if (MessageBox.Show("There are unsaved changes in the library! Are you sure you want to close this library?", "Warning!", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) {
+                    return;
+                }
+            }
             sol = new SOL();
+            unsavedChanges = true;
             lv_objectList.ItemsSource = sol.objects;
             Refresh();
         }
@@ -1039,6 +1150,7 @@ namespace SOLM {
                 using (FileStream fs = new FileStream(Environment.CurrentDirectory + @"\Created Libraries\" + sol.fqName, FileMode.Create, FileAccess.ReadWrite)) {
                     serializer.Serialize(fs, sol);
                     fs.Close();
+                    ClearUnsavedFlag();
                 }
             }
         }
@@ -1056,12 +1168,14 @@ namespace SOLM {
                         lv_objectList.ItemsSource = sol.objects;
                         Refresh();
                         fs.Close();
+                        ClearUnsavedFlag();
                     }
                 }
             }
         }
         private void lv_collidersList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_collidersList.SelectedItem != null) {
+                bool unsavedChangesBuffer = unsavedChanges;
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 tb_collider_xOffset.Text = c.xOffset.ToString();
                 tb_collider_yOffset.Text = c.yOffset.ToString();
@@ -1088,6 +1202,7 @@ namespace SOLM {
                     tb_collider_ySize.Text = (c as Cylinder).ySize.ToString();
                 }
                 colliderTypeChange = true;
+                unsavedChanges = unsavedChangesBuffer;
                 Refresh();
             }
         }
@@ -1097,15 +1212,18 @@ namespace SOLM {
                 float? value = SanitizeFloat(tb_collider_xSize);
                 if (value.HasValue) {
                     c.xSize = (float)value;
+                    unsavedChanges = true;
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_ySize_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_ySize);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     if (c is Cube) {
                         (c as Cube).ySize = (float)value;
                     } else if (c is Capsule) {
@@ -1116,75 +1234,90 @@ namespace SOLM {
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_zSize_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1 && lv_collidersList.SelectedItem is Cube) {
                 Cube c = lv_collidersList.SelectedItem as Cube;
                 float? value = SanitizeFloat(tb_collider_zSize);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     c.zSize = (float)value;
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_xOffset_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_xOffset);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     c.xOffset = (float)value;
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_yOffset_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_yOffset);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     c.yOffset = (float)value;
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_zOffset_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_zOffset);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     c.zOffset = (float)value;
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_xRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_xRot);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     c.xRot = (float)value;
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_yRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_yRot);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     c.yRot = (float)value;
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void tb_collider_zRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_zRot);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     c.zRot = (float)value;
                 }
             }
+            Refresh();
             UpdateViewport();
         }
         private void cb_requirement_property_DropDownOpened(object sender, EventArgs e) {
@@ -1209,6 +1342,7 @@ namespace SOLM {
             if (lv_requirementList.SelectedIndex != -1 && lv_requirementList.SelectedItem is PropertyRequirement && cb_requirement_property.SelectedIndex != -1) {
                 PropertyRequirement r = lv_requirementList.SelectedItem as PropertyRequirement;
                 r.property = cb_requirement_property.SelectedItem.ToString();
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1216,6 +1350,7 @@ namespace SOLM {
             if (lv_requirementList.SelectedIndex != -1 && lv_requirementList.SelectedItem is ResourceRequirement) {
                 ResourceRequirement r = lv_requirementList.SelectedItem as ResourceRequirement;
                 r.resource = tb_requirement_resource.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1223,6 +1358,7 @@ namespace SOLM {
             if (lv_requirementList.SelectedItem != null && cb_requirement_comparison.SelectedIndex != -1) {
                 Requirement r = lv_requirementList.SelectedItem as Requirement;
                 r.comparison = ((Requirement.ComparisonType)cb_requirement_comparison.SelectedIndex);
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1230,6 +1366,7 @@ namespace SOLM {
             if (lv_requirementList.SelectedIndex != -1) {
                 Requirement r = lv_requirementList.SelectedItem as Requirement;
                 r.value = tb_operationCooldown.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1237,12 +1374,14 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PropertyEffect && cb_effect_property.SelectedIndex != -1) {
                 PropertyEffect ef = lv_effectList.SelectedItem as PropertyEffect;
                 ef.property = cb_effect_property.SelectedItem.ToString();
+                unsavedChanges = true;
                 Refresh();
             }
         }
         private void cb_effect_assignment_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_effectList.SelectedItem != null && cb_effect_assignment.SelectedIndex != -1) {
                 Effect ef = lv_effectList.SelectedItem as Effect;
+                unsavedChanges = true;
                 if (ef is PropertyEffect) {
                     (ef as PropertyEffect).assignmentType = ((Effect.AssignmentType)cb_effect_assignment.SelectedIndex);
                 } else if (ef is ResourceEffect) {
@@ -1255,10 +1394,12 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ResourceEffect) {
                 ResourceEffect ef = lv_effectList.SelectedItem as ResourceEffect;
                 ef.resource = tb_effect_resource.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
         private void lv_requirementList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            bool unsavedChangesBuffer = unsavedChanges;
             if (lv_requirementList.SelectedItem != null) {
                 Requirement r = lv_requirementList.SelectedItem as Requirement;
                 cb_requirement_comparison.SelectedIndex = (int)r.comparison;
@@ -1274,12 +1415,14 @@ namespace SOLM {
                 }
                 requirementTypeChange = true;
             }
+            unsavedChanges = unsavedChangesBuffer;
         }
         private void tb_collider_radius_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_collidersList.SelectedIndex != -1) {
                 StarpointCollider c = lv_collidersList.SelectedItem as StarpointCollider;
                 float? value = SanitizeFloat(tb_collider_radius);
                 if (value.HasValue) {
+                    unsavedChanges = true;
                     if (c is Sphere) {
                         (c as Sphere).radius = (float)value;
                     } else if (c is Capsule) {
@@ -1290,17 +1433,20 @@ namespace SOLM {
                 }
             }
             UpdateViewport();
+            Refresh();
         }
         private void cb_effect_physicalType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (lv_effectList.SelectedItem != null && lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect && cb_effect_physicalType.SelectedIndex != -1) {
                 PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
                 ef.physicalType = ((Effect.PhysicalType)cb_effect_physicalType.SelectedIndex);
+                unsavedChanges = true;
                 Refresh();
             }
         }
         private void tb_effect_value_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1) {
                 Effect ef = lv_effectList.SelectedItem as Effect;
+                unsavedChanges = true;
                 if (ef is PropertyEffect) {
                     (ef as PropertyEffect).value = tb_effect_value.Text;
                 } else if (ef is ResourceEffect) {
@@ -1313,6 +1459,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect) {
                 PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
                 ef.xValue = tb_effect_xValue.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1320,6 +1467,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect) {
                 PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
                 ef.yValue = tb_effect_yValue.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1327,6 +1475,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is PhysicalEffect) {
                 PhysicalEffect ef = lv_effectList.SelectedItem as PhysicalEffect;
                 ef.zValue = tb_effect_zValue.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1334,6 +1483,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is AudioEffect) {
                 AudioEffect ef = lv_effectList.SelectedItem as AudioEffect;
                 ef.audioClip = tb_effect_audioClip.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1341,6 +1491,7 @@ namespace SOLM {
             if (lv_effectList.SelectedItem != null && lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is AudioEffect && cb_effect_audioMode.SelectedIndex != -1) {
                 AudioEffect ef = lv_effectList.SelectedItem as AudioEffect;
                 ef.audioMode = ((Effect.AudioMode)cb_effect_audioMode.SelectedIndex);
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1348,6 +1499,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is VisualEffect) {
                 VisualEffect ef = lv_effectList.SelectedItem as VisualEffect;
                 (ef as VisualEffect).visual = tb_effect_visual.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1355,12 +1507,14 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
                 (ef as ObjectEffect).obj = tb_effect_object.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
         private void tb_effect_xPos_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1) {
                 Effect ef = lv_effectList.SelectedItem as Effect;
+                unsavedChanges = true;
                 if (ef is PhysicalEffect) {
                     (ef as PhysicalEffect).xPos = tb_effect_xPos.Text;
                 } else if (ef is VisualEffect) {
@@ -1373,6 +1527,7 @@ namespace SOLM {
         }
         private void tb_effect_yPos_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 Effect ef = lv_effectList.SelectedItem as Effect;
                 if (ef is PhysicalEffect) {
                     (ef as PhysicalEffect).yPos = tb_effect_yPos.Text;
@@ -1387,6 +1542,7 @@ namespace SOLM {
         private void tb_effect_zPos_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1) {
                 Effect ef = lv_effectList.SelectedItem as Effect;
+                unsavedChanges = true;
                 if (ef is PhysicalEffect) {
                     (ef as PhysicalEffect).zPos = tb_effect_zPos.Text;
                 } else if (ef is VisualEffect) {
@@ -1399,6 +1555,7 @@ namespace SOLM {
         }
         private void tb_effect_xRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 Effect ef = lv_effectList.SelectedItem as Effect;
                 if (ef is VisualEffect) {
                     (ef as VisualEffect).xRot = tb_effect_xRot.Text;
@@ -1410,6 +1567,7 @@ namespace SOLM {
         }
         private void tb_effect_yRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 Effect ef = lv_effectList.SelectedItem as Effect;
                 if (ef is VisualEffect) {
                     (ef as VisualEffect).yRot = tb_effect_yRot.Text;
@@ -1421,6 +1579,7 @@ namespace SOLM {
         }
         private void tb_effect_zRot_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1) {
+                unsavedChanges = true;
                 Effect ef = lv_effectList.SelectedItem as Effect;
                 if (ef is VisualEffect) {
                     (ef as VisualEffect).zRot = tb_effect_zRot.Text;
@@ -1433,6 +1592,7 @@ namespace SOLM {
         private void tb_effect_xVelocity_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
+                unsavedChanges = true;
                 ef.xVel = tb_effect_xVelocity.Text;
                 Refresh();
             }
@@ -1441,6 +1601,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
                 ef.yVel = tb_effect_yVelocity.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1448,6 +1609,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
                 ef.zVel = tb_effect_zVelocity.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1455,6 +1617,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
                 ef.xAng = tb_effect_xAngVelocity.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1462,12 +1625,14 @@ namespace SOLM {
             if (lv_propertiesList.SelectedItem != null) {
                 Property p = lv_propertiesList.SelectedItem as Property;
                 p.control = (bool)cb_property_control.IsChecked;
+                unsavedChanges = true;
                 Refresh();
             }
         }
         private void tb_property_default_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_propertiesList.SelectedItem != null) {
                 Property p = lv_propertiesList.SelectedItem as Property;
+                unsavedChanges = true;
                 if (p is ContainerProperty) {
                     float? value = SanitizeFloat(tb_property_default);
                     if (value.HasValue) {
@@ -1494,6 +1659,7 @@ namespace SOLM {
         }
         private void tb_object_xScale_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_objectList.SelectedItem != null) {
+                unsavedChanges = true;
                 StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
                 float? value = SanitizeFloat(tb_object_xScale);
                 if (value.HasValue) {
@@ -1504,6 +1670,7 @@ namespace SOLM {
         }
         private void tb_object_yScale_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_objectList.SelectedItem != null) {
+                unsavedChanges = true;
                 StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
                 float? value = SanitizeFloat(tb_object_yScale);
                 if (value.HasValue) {
@@ -1514,6 +1681,7 @@ namespace SOLM {
         }
         private void tb_object_zScale_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_objectList.SelectedItem != null) {
+                unsavedChanges = true;
                 StarpointObject o = lv_objectList.SelectedItem as StarpointObject;
                 float? value = SanitizeFloat(tb_object_zScale);
                 if (value.HasValue) {
@@ -1524,12 +1692,14 @@ namespace SOLM {
         }
         private void tb_version_TextChanged(object sender, TextChangedEventArgs e) {
             sol.version = tb_version.Text;
+            unsavedChanges = true;
             Refresh();
         }
         private void tb_effect_yAngVelocity_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
                 ef.yAng = tb_effect_yAngVelocity.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
@@ -1537,6 +1707,7 @@ namespace SOLM {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
                 ef.yAng = tb_effect_yAngVelocity.Text;
+                unsavedChanges = true;
                 Refresh();
             }
         }
