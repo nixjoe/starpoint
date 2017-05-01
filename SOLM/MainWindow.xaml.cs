@@ -40,7 +40,7 @@ namespace SOLM {
             cb_operation_actionType.ItemsSource = new List<string>(new string[] { "Discrete", "Continuous" });
             cb_operation_trigger.ItemsSource = new List<string>(new string[] { "Auto", "Semiauto", "Passive" });
             cb_effect_type.ItemsSource = new List<string>(new string[] { "Property", "Resource", "Physical", "Audio", "Visual", "Object" });
-            cb_effect_assignment.ItemsSource = new List<string>(new string[] { "Equals", "Additive", "Subractive", "Multiplicative" });
+            cb_effect_assignment.ItemsSource = new List<string>(new string[] { "Equals", "Additive", "Subtractive", "Multiplicative" });
             cb_property_type.ItemsSource = new List<string>(new string[] { "Container", "Integer", "Real", "Enum" });
             cb_requirement_comparison.ItemsSource = new List<string>(new string[] { "=", "<", ">", "<=", ">=", "!=" });
             cb_requirement_type.ItemsSource = new List<string>(new string[] { "Resource", "Property" });
@@ -676,6 +676,12 @@ namespace SOLM {
                         tb_effect_xAngVelocity.Visibility = Visibility.Visible;
                         tb_effect_yAngVelocity.Visibility = Visibility.Visible;
                         tb_effect_zAngVelocity.Visibility = Visibility.Visible;
+                        tb_effect_xPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_yPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_zPosLabel.Visibility = Visibility.Visible;
+                        tb_effect_xPos.Visibility = Visibility.Visible;
+                        tb_effect_yPos.Visibility = Visibility.Visible;
+                        tb_effect_zPos.Visibility = Visibility.Visible;
                         break;
                 }
             }
@@ -1706,7 +1712,7 @@ namespace SOLM {
         private void tb_effect_zAngVelocity_TextChanged(object sender, TextChangedEventArgs e) {
             if (lv_effectList.SelectedIndex != -1 && lv_effectList.SelectedItem is ObjectEffect) {
                 ObjectEffect ef = lv_effectList.SelectedItem as ObjectEffect;
-                ef.yAng = tb_effect_yAngVelocity.Text;
+                ef.zAng = tb_effect_yAngVelocity.Text;
                 unsavedChanges = true;
                 Refresh();
             }
