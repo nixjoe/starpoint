@@ -382,10 +382,10 @@
                                                 <TextBlock Text="Y angular velocity*:" Name="tb_effect_yAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
                                                 <TextBox Name="tb_effect_yAngVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_yAngVelocity_TextChanged"/>
                                             </DockPanel>
-                                                <DockPanel>
-                                                    <TextBlock Text="Z angular velocity*:" Name="tb_effect_zAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
-                                                    <TextBox Name="tb_effect_zAngVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_zAngVelocity_TextChanged"/>
-                                                </DockPanel>
+                                            <DockPanel>
+                                                <TextBlock Text="Z angular velocity*:" Name="tb_effect_zAngVelocityLabel" Grid.Column="0" Margin="5" Height="22"/>
+                                                <TextBox Name="tb_effect_zAngVelocity" MinHeight="22" Margin="5" TextChanged="tb_effect_zAngVelocity_TextChanged"/>
+                                            </DockPanel>
                                             </StackPanel>
                                     </ScrollViewer>
                                 </TabItem>
