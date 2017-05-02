@@ -5,26 +5,26 @@ using System;
 
 public class ObjectManager : MonoBehaviour {
     public static ObjectManager instance;
-    public static string srlPath;
+    public static string solPath;
     public List<SOL> libraries;
 
     void Start() {
         if (instance == null) {
-            srlPath = Path.Combine(Application.dataPath, "data");
+            solPath = Path.Combine(Application.dataPath, "data");
             DontDestroyOnLoad(gameObject);
             instance = this;
             libraries = new List<SOL>();
-            LoadSrls(srlPath);
+            LoadSols(solPath);
             Debug.Log("Finished loading object libraries.");
         } else {
             Debug.LogError("Trying to instantiate more than one ObjectManager! Sad!");
         }
     }
 
-    private void LoadSrls(string path) {
+    private void LoadSols(string path) {
         foreach (string fse in Directory.GetFileSystemEntries(path)) {
             if (Directory.Exists(fse)) {
-                LoadSrls(fse);
+                LoadSols(fse);
             } else {
                 if (Path.GetExtension(fse) == ".sol") {
                     try {
@@ -66,5 +66,12 @@ public class ObjectManager : MonoBehaviour {
             Debug.LogError("Couldn't find <bundle>.<library> " + bundle + "." + library + " in loaded SOLs! Offending object: " + name);
         }
         return null;
+    }
+    public GameObject Instantiate(StarpointObject starpointObject) {
+        GameObject go = new GameObject(starpointObject.name);
+        StarpointObjectBehaviour starpointObjectBehaviour = go.AddComponent<StarpointObjectBehaviour>();
+        starpointObjectBehaviour.starpointObject = new StarpointObject(starpointObject);
+        starpointObjectBehaviour.Initialize();
+        return go;
     }
 }
