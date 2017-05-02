@@ -10,7 +10,7 @@ public class ResourceManager : MonoBehaviour {
 
 	void Start () {
         if (instance == null) {
-            srlPath = Path.Combine(Application.dataPath, "data");
+            srlPath = Path.Combine(Application.dataPath, "Resources");
             DontDestroyOnLoad(gameObject);
             instance = this;
             libraries = new List<SRL>();

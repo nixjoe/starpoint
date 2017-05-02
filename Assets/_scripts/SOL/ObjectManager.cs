@@ -7,14 +7,14 @@ public class ObjectManager : MonoBehaviour {
     public static ObjectManager instance;
     public static string solPath;
     public List<SOL> libraries;
-
     void Start() {
         if (instance == null) {
-            solPath = Path.Combine(Application.dataPath, "data");
+            solPath = Path.Combine(Application.dataPath, "Resources");
             DontDestroyOnLoad(gameObject);
             instance = this;
             libraries = new List<SOL>();
             LoadSols(solPath);
+            LoadModels(solPath);
             Debug.Log("Finished loading object libraries.");
         } else {
             Debug.LogError("Trying to instantiate more than one ObjectManager! Sad!");
@@ -49,6 +49,39 @@ public class ObjectManager : MonoBehaviour {
                 }
             }
         }
+    }
+    private void LoadModels(string path) {
+        List<Mesh> meshes = new List<Mesh>();
+        List<Texture2D> textures = new List<Texture2D>();
+        foreach (string fse in Directory.GetFileSystemEntries(path)) {
+            if (Directory.Exists(fse)) {
+                LoadModels(fse);
+            } else {
+                Mesh m;
+                Texture2D t;
+                switch (Path.GetExtension(fse)) {
+                    case ".fbx":
+                        //load fbx to mesh
+                        m = Resources.Load<Mesh>(fse);
+                        m.name = Path.GetFileNameWithoutExtension(fse);
+                        meshes.Add(m);
+                        break;
+                    case ".obj":
+                        //load obj to mesh
+                        m = Resources.Load<Mesh>(fse);
+                        m.name = Path.GetFileNameWithoutExtension(fse);
+                        meshes.Add(m);
+                        break;
+                    case ".png":
+                        //load png to texture
+                        t = Resources.Load<Texture2D>(fse);
+                        t.name = Path.GetFileNameWithoutExtension(fse);
+                        textures.Add(t);
+                        break;
+                }
+            }
+        }
+        Debug.Log("breakpoint");
     }
 
     public StarpointObject Find(string name) {
