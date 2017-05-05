@@ -5,16 +5,16 @@ using System;
 
 public class ResourceManager : MonoBehaviour {
     public static ResourceManager instance;
-    public static string srlPath;
+    static string dataPath;
     public List<SRL> libraries;
 
 	void Start () {
         if (instance == null) {
-            srlPath = Path.Combine(Application.dataPath, "Resources");
+            dataPath = Path.Combine(Application.dataPath, "data");
             DontDestroyOnLoad(gameObject);
             instance = this;
             libraries = new List<SRL>();
-            LoadSrls(srlPath);
+            LoadSrls(dataPath);
             Debug.Log("Finished loading resource libraries.");
         } else {
             Debug.LogError("Trying to instantiate more than one ResourceManager! Sad!");

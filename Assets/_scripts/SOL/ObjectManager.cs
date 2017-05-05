@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Linq;
 
 public class ObjectManager : MonoBehaviour {
     public static ObjectManager instance;
-    public static string solPath;
+    static string dataPath;
     public List<SOL> libraries;
+    public List<StarpointModel> models;
     void Start() {
         if (instance == null) {
-            solPath = Path.Combine(Application.dataPath, "Resources");
+            dataPath = Path.Combine(Application.dataPath, "data");
             DontDestroyOnLoad(gameObject);
             instance = this;
             libraries = new List<SOL>();
-            LoadSols(solPath);
-            LoadModels(solPath);
+            LoadSols(dataPath);
+            models = LoadModels(dataPath);
             Debug.Log("Finished loading object libraries.");
         } else {
             Debug.LogError("Trying to instantiate more than one ObjectManager! Sad!");
@@ -50,38 +52,22 @@ public class ObjectManager : MonoBehaviour {
             }
         }
     }
-    private void LoadModels(string path) {
-        List<Mesh> meshes = new List<Mesh>();
-        List<Texture2D> textures = new List<Texture2D>();
+    private List<StarpointModel> LoadModels(string path) {
+        List<StarpointModel> models = new List<StarpointModel>();
         foreach (string fse in Directory.GetFileSystemEntries(path)) {
             if (Directory.Exists(fse)) {
                 LoadModels(fse);
             } else {
-                Mesh m;
-                Texture2D t;
                 switch (Path.GetExtension(fse)) {
-                    case ".fbx":
-                        //load fbx to mesh
-                        m = Resources.Load<Mesh>(fse);
-                        m.name = Path.GetFileNameWithoutExtension(fse);
-                        meshes.Add(m);
-                        break;
                     case ".obj":
                         //load obj to mesh
-                        m = Resources.Load<Mesh>(fse);
-                        m.name = Path.GetFileNameWithoutExtension(fse);
-                        meshes.Add(m);
-                        break;
-                    case ".png":
-                        //load png to texture
-                        t = Resources.Load<Texture2D>(fse);
-                        t.name = Path.GetFileNameWithoutExtension(fse);
-                        textures.Add(t);
+                        models.Add(new StarpointModel(Path.GetFileNameWithoutExtension(fse)));
                         break;
                 }
             }
         }
         Debug.Log("breakpoint");
+        return models;
     }
 
     public StarpointObject Find(string name) {
